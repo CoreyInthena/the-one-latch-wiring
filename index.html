@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>THE ONE LATCH — Interactive Wiring Diagram</title>
+<title>THE ONE LATCH — No-Solder WAGO Wiring Diagram</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
     --steel-950:#0f1316;--steel-900:#14191d;--steel-850:#191f24;--steel-800:#1f262c;
     --steel-700:#28313a;--line:#37424c;--text:#e9edf0;--muted:#8b97a1;--amber:#ffb20a;--green:#46c46b;
     --v12:#ff8c2a;--v5:#ff5a52;--gnd:#6b7780;--i2c:#2fd6d6;--kpad:#5fcf6b;
-    --rc:#b48bff;--lid:#e879c9;--act:#eef2f5;--bs:#ffd23f;
+    --rc:#b48bff;--lid:#e879c9;--act:#eef2f5;--bs:#ffd23f;--sol:#58a6ff;
     --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
     --sans:'IBM Plex Sans',-apple-system,Segoe UI,sans-serif;--disp:'Oswald',sans-serif;
   }
@@ -35,7 +35,7 @@
   .sw{width:13px;height:4px;border-radius:2px;flex:0 0 auto}
   .lg .reset{font-family:var(--disp);letter-spacing:.1em;text-transform:uppercase}
 
-  .stage{display:flex;gap:18px;padding:14px 22px 30px;align-items:flex-start;flex-wrap:wrap}
+  .stage{display:flex;gap:18px;padding:14px 22px 8px;align-items:flex-start;flex-wrap:wrap}
   .board{flex:1 1 580px;min-width:320px;background:var(--steel-900);border:1px solid var(--line)}
   svg{display:block;width:100%;height:auto}
 
@@ -61,6 +61,10 @@
   .ck-row:has(input:checked) .txt{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
   .ck-row .txt b{font-family:var(--mono);font-weight:600;color:inherit}
 
+  .rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px;padding:8px 22px 30px}
+  .rule{font-family:var(--mono);font-size:11px;color:var(--muted);border:1px solid var(--line);background:var(--steel-850);padding:10px 12px;line-height:1.55}
+  .rule b{display:block;color:var(--amber);letter-spacing:.08em;margin-bottom:4px;font-family:var(--disp);font-weight:600;font-size:12px;text-transform:uppercase}
+
   .zone{fill-opacity:1;stroke:var(--line);stroke-dasharray:3 4}
   .zone.z12{fill:rgba(255,140,42,.045)} .zone.z5{fill:rgba(95,207,107,.04)}
   .zlabel{font-family:var(--disp);font-weight:600;font-size:15px;letter-spacing:.1em;pointer-events:none;text-transform:uppercase}
@@ -71,13 +75,14 @@
   .csub{font-family:var(--mono);font-size:8.5px;fill:var(--muted);pointer-events:none;letter-spacing:.04em}
   .pin{font-family:var(--mono);font-size:9px;fill:var(--muted);pointer-events:none}
   .dot{fill:var(--steel-950);stroke:var(--muted);stroke-width:1.5}
+  .jdot{stroke:none;pointer-events:none}
   .rail{stroke-width:10;stroke-linecap:round}.rail.r5{stroke:var(--v5)}.rail.rg{stroke:var(--gnd)}
   .raillabel{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;pointer-events:none}
   .wire{fill:none;stroke-width:2.4;transition:opacity .15s,stroke-width .15s;opacity:.9}
   .wire.net-v12{stroke:var(--v12)}.wire.net-v5{stroke:var(--v5)}.wire.net-gnd{stroke:var(--gnd)}
   .wire.net-i2c{stroke:var(--i2c)}.wire.net-kpad{stroke:var(--kpad);stroke-width:4}
   .wire.net-rc{stroke:var(--rc)}.wire.net-lid{stroke:var(--lid)}.wire.net-act{stroke:var(--act)}
-  .wire.net-bs{stroke:var(--bs);stroke-dasharray:6 5}
+  .wire.net-bs{stroke:var(--bs);stroke-dasharray:6 5}.wire.net-sol{stroke:var(--sol)}
   .sel .wire{opacity:.06}.sel .wire.hot{opacity:1;stroke-width:5}
   .sel .comp{opacity:.3}.sel .comp.focus{opacity:1}
   @media(max-width:820px){.panel{flex:1 1 100%;position:static;max-height:none}}
@@ -86,26 +91,27 @@
 <body>
 <header>
   <span class="badge">THE ONE LATCH</span>
-  <div><h1>Wiring Diagram</h1><p>SMART LOCK WIRING VISUALIZER</p></div>
+  <div><h1>Wiring Diagram — No-Solder / WAGO</h1><p>WAGO 221 + SCREW-TERMINAL BUILD · DS3231 RTC · SOLAR TIER</p></div>
   <div class="hint">hover to preview · click to lock<br>check off each wire as you go</div>
 </header>
 
 <div class="legend" id="legend">
   <div class="lg" data-net="v12"><span class="sw" style="background:var(--v12)"></span>12V+</div>
-  <div class="lg" data-net="gnd"><span class="sw" style="background:var(--gnd)"></span>GND</div>
-  <div class="lg" data-net="v5"><span class="sw" style="background:var(--v5)"></span>5V rail</div>
-  <div class="lg" data-net="i2c"><span class="sw" style="background:var(--i2c)"></span>I²C</div>
+  <div class="lg" data-net="gnd"><span class="sw" style="background:var(--gnd)"></span>GND / 12V−</div>
+  <div class="lg" data-net="v5"><span class="sw" style="background:var(--v5)"></span>5V hub</div>
+  <div class="lg" data-net="i2c"><span class="sw" style="background:var(--i2c)"></span>I²C (OLED+RTC)</div>
   <div class="lg" data-net="kpad"><span class="sw" style="background:var(--kpad)"></span>Keypad</div>
   <div class="lg" data-net="rc"><span class="sw" style="background:var(--rc)"></span>Relay ctrl</div>
   <div class="lg" data-net="lid"><span class="sw" style="background:var(--lid)"></span>Lid sensor</div>
   <div class="lg" data-net="act"><span class="sw" style="background:var(--act)"></span>Actuator</div>
+  <div class="lg" data-net="sol"><span class="sw" style="background:var(--sol)"></span>Solar (add-on)</div>
   <div class="lg" data-net="bs"><span class="sw" style="background:var(--bs)"></span>Batt-sense (opt)</div>
   <div class="lg" id="resetBtn"><span class="reset">↺ show all</span></div>
 </div>
 
 <div class="stage">
   <div class="board">
-    <svg viewBox="0 0 1040 670" role="img" aria-label="Wiring diagram">
+    <svg viewBox="0 0 1040 670" role="img" aria-label="No-solder WAGO wiring diagram">
       <!-- ZONES -->
       <rect class="zone z12" x="14" y="56" width="494" height="600"/>
       <rect class="zone z5"  x="520" y="56" width="506" height="600"/>
@@ -118,29 +124,41 @@
       <path id="w-fuse-wpos" class="wire net-v12" data-comp="fuse wpos" d="M245 110 L270 110"/>
       <path id="w-wpos-buck" class="wire net-v12" data-comp="wpos buck" d="M400 110 L500 110 L500 190 L545 190"/>
       <path id="w-wpos-relay" class="wire net-v12" data-comp="wpos relay" d="M335 138 L335 405 L270 405 L270 448 L290 448"/>
-      <!-- GND -->
+      <!-- 12V− return -->
       <path id="w-bat-wgnd"  class="wire net-gnd" data-comp="bat wgnd"  d="M150 118 L150 175 L240 175 L240 200"/>
       <path id="w-wgnd-buck" class="wire net-gnd" data-comp="wgnd buck" d="M305 228 L500 228 L500 214 L545 214"/>
       <path id="w-wgnd-relay" class="wire net-gnd" data-comp="wgnd relay" d="M240 256 L240 590 L290 590 L290 536"/>
-      <!-- 5V rail taps -->
-      <path id="w-buck-5v"   class="wire net-v5" data-comp="buck rail"  d="M685 190 L685 316"/>
-      <path id="w-nano-5v"   class="wire net-v5" data-comp="nano rail"  d="M590 380 L590 316"/>
-      <path id="w-oled-5v"   class="wire net-v5" data-comp="oled rail"  d="M840 410 L862 410 L862 316"/>
-      <path id="w-relay-5v"  class="wire net-v5" data-comp="relay rail" d="M460 445 L522 445 L522 316 L560 316"/>
-      <!-- GND rail taps -->
-      <path id="w-buck-gnd"  class="wire net-gnd" data-comp="buck rail" d="M685 214 L712 214 L712 344"/>
-      <path id="w-nano-gnd"  class="wire net-gnd" data-comp="nano rail" d="M620 380 L620 344"/>
-      <path id="w-oled-gnd"  class="wire net-gnd" data-comp="oled rail" d="M840 430 L882 430 L882 344"/>
-      <path id="w-relay-gnd" class="wire net-gnd" data-comp="relay rail" d="M460 468 L506 468 L506 344 L560 344"/>
-      <path id="w-sw-gnd"    class="wire net-gnd" data-comp="sw rail"    d="M840 570 L902 570 L902 344"/>
-      <!-- I2C -->
-      <path id="w-a4" class="wire net-i2c" data-comp="nano oled" d="M735 415 L788 415 L788 452 L840 452"/>
-      <path id="w-a5" class="wire net-i2c" data-comp="nano oled" d="M735 435 L774 435 L774 472 L840 472"/>
+      <!-- Solar add-on -->
+      <path id="w-sol-batp" class="wire net-sol" data-comp="ctl bat"  d="M185 306 L30 306 L30 64 L100 64 L100 80"/>
+      <path id="w-sol-batn" class="wire net-sol" data-comp="ctl wgnd" d="M264 292 L264 256"/>
+      <path id="w-sol-pvp"  class="wire net-sol" data-comp="sol ctl"  d="M150 338 L185 338"/>
+      <path id="w-sol-pvn"  class="wire net-sol" data-comp="sol ctl"  d="M150 362 L185 362"/>
+      <!-- 5V hub taps -->
+      <path id="w-buck-5v"   class="wire net-v5" data-comp="buck"  d="M685 190 L685 316"/>
+      <path id="w-nano-5v"   class="wire net-v5" data-comp="nano"  d="M590 380 L590 316"/>
+      <path id="w-oled-5v"   class="wire net-v5" data-comp="oled"  d="M840 448 L826 448 L826 316"/>
+      <path id="w-relay-5v"  class="wire net-v5" data-comp="relay" d="M460 445 L522 445 L522 316 L560 316"/>
+      <!-- GND hub taps -->
+      <path id="w-buck-gnd"  class="wire net-gnd" data-comp="buck" d="M685 214 L712 214 L712 344"/>
+      <path id="w-nano-gnd"  class="wire net-gnd" data-comp="nano" d="M620 380 L620 344"/>
+      <path id="w-oled-gnd"  class="wire net-gnd" data-comp="oled" d="M840 470 L818 470 L818 344"/>
+      <path id="w-relay-gnd" class="wire net-gnd" data-comp="relay" d="M460 468 L506 468 L506 344 L560 344"/>
+      <path id="w-sw-gnd"    class="wire net-gnd" data-comp="sw"    d="M840 590 L802 590 L802 344"/>
+      <!-- RTC power (screw-board spare terminals) -->
+      <path id="w-rtc-5v"  class="wire net-v5"  data-comp="nano rtc" d="M700 380 L700 234 L840 234"/>
+      <path id="w-rtc-gnd" class="wire net-gnd" data-comp="nano rtc" d="M726 380 L726 258 L840 258"/>
+      <!-- I2C via SDA/SCL WAGO hubs -->
+      <path id="w-a4" class="wire net-i2c" data-comp="nano ihub" d="M735 415 L784 415 L784 378 L850 378"/>
+      <path id="w-a5" class="wire net-i2c" data-comp="nano ihub" d="M735 435 L800 435 L800 394 L850 394"/>
+      <path id="w-oled-sda" class="wire net-i2c" data-comp="ihub oled" d="M884 406 L884 420"/>
+      <path id="w-oled-scl" class="wire net-i2c" data-comp="ihub oled" d="M920 406 L920 420"/>
+      <path id="w-rtc-sda"  class="wire net-i2c" data-comp="ihub rtc" d="M884 366 L884 284"/>
+      <path id="w-rtc-scl"  class="wire net-i2c" data-comp="ihub rtc" d="M920 366 L920 284"/>
       <!-- relay control -->
       <path id="w-d2" class="wire net-rc" data-comp="nano relay" d="M735 465 L758 465 L758 615 L460 615 L460 500"/>
       <path id="w-d3" class="wire net-rc" data-comp="nano relay" d="M735 485 L772 485 L772 632 L444 632 L444 525 L460 525"/>
       <!-- lid sensor -->
-      <path id="w-d4" class="wire net-lid" data-comp="nano sw" d="M735 515 L790 515 L790 545 L840 545"/>
+      <path id="w-d4" class="wire net-lid" data-comp="nano sw" d="M735 515 L790 515 L790 566 L840 566"/>
       <!-- keypad -->
       <path id="w-kp" class="wire net-kpad" data-comp="nano kp" d="M735 548 L760 548 L760 130 L840 130"/>
       <!-- actuator -->
@@ -149,18 +167,28 @@
       <!-- battery sense (optional) -->
       <path id="w-bs" class="wire net-bs" data-comp="nano" d="M735 572 L770 572 L770 600"/>
 
-      <!-- RAILS -->
-      <line class="rail r5" x1="560" y1="316" x2="1000" y2="316"/>
-      <line class="rail rg" x1="560" y1="344" x2="1000" y2="344"/>
-      <text class="raillabel" x="564" y="307" fill="var(--v5)">5V RAIL  (from Buck OUT+)</text>
-      <text class="raillabel" x="564" y="366" fill="var(--gnd)">GND RAIL  (logic ground)</text>
+      <!-- WAGO HUB RAILS (each line = one WAGO 221-415; dots = its slots) -->
+      <line class="rail r5" x1="560" y1="316" x2="870" y2="316"/>
+      <line class="rail rg" x1="560" y1="344" x2="870" y2="344"/>
+      <text class="raillabel" x="564" y="307" fill="var(--v5)">5V HUB — WAGO 221-415 (BUCK OUT+)</text>
+      <text class="raillabel" x="564" y="366" fill="var(--gnd)">GND HUB — WAGO 221-415 · DOTS = SLOTS</text>
+      <circle class="jdot" cx="560" cy="316" r="3.5" fill="var(--v5)"/>
+      <circle class="jdot" cx="590" cy="316" r="3.5" fill="var(--v5)"/>
+      <circle class="jdot" cx="685" cy="316" r="3.5" fill="var(--v5)"/>
+      <circle class="jdot" cx="826" cy="316" r="3.5" fill="var(--v5)"/>
+      <circle class="jdot" cx="560" cy="344" r="3.5" fill="var(--text)"/>
+      <circle class="jdot" cx="620" cy="344" r="3.5" fill="var(--text)"/>
+      <circle class="jdot" cx="712" cy="344" r="3.5" fill="var(--text)"/>
+      <circle class="jdot" cx="802" cy="344" r="3.5" fill="var(--text)"/>
+      <circle class="jdot" cx="818" cy="344" r="3.5" fill="var(--text)"/>
 
       <!-- ===== 12V ZONE COMPONENTS ===== -->
       <g class="comp" data-comp="bat">
         <rect class="body" x="40" y="80" width="110" height="60"/>
-        <text class="clabel" x="54" y="108">12V SLA</text><text class="csub" x="54" y="124">BATTERY</text>
+        <text class="clabel" x="54" y="108">12V SLA</text><text class="csub" x="54" y="124">BATTERY 7AH</text>
         <circle class="dot" cx="150" cy="95" r="4"/><text class="pin" x="128" y="91">+</text>
         <circle class="dot" cx="150" cy="118" r="4"/><text class="pin" x="128" y="114">-</text>
+        <circle class="dot" cx="100" cy="80" r="4"/><text class="pin" x="106" y="76">+ tab</text>
         <rect class="hit" x="40" y="80" width="110" height="60"/>
       </g>
       <g class="comp" data-comp="fuse">
@@ -171,21 +199,40 @@
       </g>
       <g class="comp" data-comp="wpos">
         <rect class="body" x="270" y="82" width="130" height="56"/>
-        <text class="clabel" x="284" y="108">WAGO</text><text class="csub" x="284" y="124">12V+ JUNCTION</text>
+        <text class="clabel" x="284" y="108">WAGO 221-413</text><text class="csub" x="284" y="124">12V+ HUB · 3 SLOTS</text>
         <circle class="dot" cx="270" cy="110" r="4"/><circle class="dot" cx="400" cy="110" r="4"/>
         <circle class="dot" cx="335" cy="138" r="4"/>
         <rect class="hit" x="270" y="82" width="130" height="56"/>
       </g>
       <g class="comp" data-comp="wgnd">
         <rect class="body" x="175" y="200" width="130" height="56"/>
-        <text class="clabel" x="189" y="226">WAGO</text><text class="csub" x="189" y="242">GND JUNCTION</text>
+        <text class="clabel" x="189" y="226">WAGO 221-413</text><text class="csub" x="189" y="242">12V− HUB · 415 IF SOLAR</text>
         <circle class="dot" cx="240" cy="200" r="4"/><circle class="dot" cx="305" cy="228" r="4"/>
-        <circle class="dot" cx="240" cy="256" r="4"/>
+        <circle class="dot" cx="240" cy="256" r="4"/><circle class="dot" cx="264" cy="256" r="4"/>
         <rect class="hit" x="175" y="200" width="130" height="56"/>
+      </g>
+      <g class="comp" data-comp="sol">
+        <rect class="body" x="40" y="316" width="110" height="72"/>
+        <text class="clabel" x="52" y="344">SOLAR</text><text class="csub" x="52" y="360">12V 5–10W PANEL</text>
+        <text class="csub" x="52" y="374">LEADS VIA M12 GLAND</text>
+        <circle class="dot" cx="150" cy="338" r="4"/><text class="pin" x="136" y="334">+</text>
+        <circle class="dot" cx="150" cy="362" r="4"/><text class="pin" x="136" y="358">-</text>
+        <rect class="hit" x="40" y="316" width="110" height="72"/>
+      </g>
+      <g class="comp" data-comp="ctl">
+        <rect class="body" x="185" y="292" width="140" height="88"/>
+        <text class="clabel" x="198" y="322">PWM CHARGE</text><text class="csub" x="198" y="338">CONTROLLER 12V 5A</text>
+        <text class="csub" x="198" y="368">LOAD: EMPTY (BY DESIGN)</text>
+        <circle class="dot" cx="185" cy="306" r="4"/>
+        <circle class="dot" cx="185" cy="338" r="4"/>
+        <circle class="dot" cx="185" cy="362" r="4"/>
+        <circle class="dot" cx="264" cy="292" r="4"/><text class="pin" x="270" y="288">BAT-</text>
+        <text class="pin" x="152" y="302">BAT+</text>
+        <rect class="hit" x="185" y="292" width="140" height="88"/>
       </g>
       <g class="comp" data-comp="relay">
         <rect class="body" x="290" y="420" width="170" height="150"/>
-        <text class="clabel" x="304" y="448">2-CH</text><text class="csub" x="304" y="464">RELAY MODULE</text>
+        <text class="clabel" x="304" y="448">2-CH</text><text class="csub" x="304" y="464">RELAY · LOW-TRIGGER</text>
         <circle class="dot" cx="290" cy="448" r="4"/><text class="pin" x="298" y="444">NO x2</text>
         <circle class="dot" cx="290" cy="492" r="4"/><text class="pin" x="298" y="488">COM x2</text>
         <circle class="dot" cx="290" cy="536" r="4"/><text class="pin" x="298" y="532">NC x2</text>
@@ -206,7 +253,7 @@
       <!-- ===== 5V ZONE COMPONENTS ===== -->
       <g class="comp" data-comp="buck">
         <rect class="body" x="545" y="158" width="140" height="72"/>
-        <text class="clabel" x="559" y="186">LM2596</text><text class="csub" x="559" y="202">BUCK · 5V OUT</text>
+        <text class="clabel" x="559" y="186">LM2596</text><text class="csub" x="559" y="202">SCREW-TERM · SET 5.0V</text>
         <circle class="dot" cx="545" cy="190" r="4"/><text class="pin" x="511" y="186">IN+</text>
         <circle class="dot" cx="545" cy="214" r="4"/><text class="pin" x="513" y="210">IN-</text>
         <circle class="dot" cx="685" cy="190" r="4"/><text class="pin" x="691" y="186">OUT+</text>
@@ -215,9 +262,11 @@
       </g>
       <g class="comp" data-comp="nano">
         <rect class="body" x="560" y="380" width="175" height="210"/>
-        <text class="clabel" x="574" y="408">ARDUINO</text><text class="csub" x="574" y="424">NANO V3</text>
+        <text class="clabel" x="574" y="408">NANO V3</text><text class="csub" x="574" y="424">ON SCREW-TERM BOARD</text>
         <circle class="dot" cx="590" cy="380" r="4"/><text class="pin" x="578" y="372">5V</text>
         <circle class="dot" cx="620" cy="380" r="4"/><text class="pin" x="608" y="372">GND</text>
+        <circle class="dot" cx="700" cy="380" r="4"/><text class="pin" x="686" y="372">5V*</text>
+        <circle class="dot" cx="726" cy="380" r="4"/><text class="pin" x="712" y="364">GND*</text>
         <circle class="dot" cx="735" cy="415" r="4"/><text class="pin" x="700" y="411">A4</text>
         <circle class="dot" cx="735" cy="435" r="4"/><text class="pin" x="700" y="431">A5</text>
         <circle class="dot" cx="735" cy="465" r="4"/><text class="pin" x="700" y="461">D2</text>
@@ -225,87 +274,134 @@
         <circle class="dot" cx="735" cy="515" r="4"/><text class="pin" x="700" y="511">D4</text>
         <circle class="dot" cx="735" cy="548" r="4"/><text class="pin" x="672" y="544">D6-13</text>
         <circle class="dot" cx="735" cy="572" r="4"/><text class="pin" x="700" y="568">A0</text>
+        <text class="csub" x="574" y="580">* SPARE SCREW TERMINALS → RTC</text>
         <rect class="hit" x="560" y="380" width="175" height="210"/>
       </g>
       <g class="comp" data-comp="kp">
         <rect class="body" x="840" y="95" width="160" height="70"/>
-        <text class="clabel" x="854" y="123">4x4</text><text class="csub" x="854" y="140">KEYPAD</text>
+        <text class="clabel" x="854" y="123">4x4</text><text class="csub" x="854" y="140">KEYPAD · DUPONT ONLY</text>
         <circle class="dot" cx="840" cy="130" r="4"/><text class="pin" x="796" y="126">P1-8</text>
         <rect class="hit" x="840" y="95" width="160" height="70"/>
       </g>
+      <g class="comp" data-comp="rtc">
+        <rect class="body" x="840" y="196" width="160" height="88"/>
+        <text class="clabel" x="856" y="222">DS3231 RTC</text>
+        <text class="csub" x="946" y="222">0x68</text>
+        <text class="csub" x="856" y="246">LIR2032 (NEVER CR!)</text>
+        <text class="csub" x="856" y="270">SNIP PWR LED</text>
+        <circle class="dot" cx="840" cy="234" r="4"/><text class="pin" x="802" y="230">VCC</text>
+        <circle class="dot" cx="840" cy="258" r="4"/><text class="pin" x="802" y="254">GND</text>
+        <circle class="dot" cx="884" cy="284" r="4"/><text class="pin" x="872" y="278">SDA</text>
+        <circle class="dot" cx="920" cy="284" r="4"/><text class="pin" x="908" y="278">SCL</text>
+        <rect class="hit" x="840" y="196" width="160" height="88"/>
+      </g>
+      <g class="comp" data-comp="ihub">
+        <rect class="body" x="850" y="366" width="150" height="40"/>
+        <text class="clabel" x="862" y="383">SDA·SCL HUBS</text><text class="csub" x="862" y="398">2× WAGO 221-413</text>
+        <circle class="dot" cx="850" cy="378" r="4"/>
+        <circle class="dot" cx="850" cy="394" r="4"/>
+        <circle class="dot" cx="884" cy="366" r="4"/><circle class="dot" cx="920" cy="366" r="4"/>
+        <circle class="dot" cx="884" cy="406" r="4"/><circle class="dot" cx="920" cy="406" r="4"/>
+        <rect class="hit" x="850" y="366" width="150" height="40"/>
+      </g>
       <g class="comp" data-comp="oled">
-        <rect class="body" x="840" y="388" width="160" height="86"/>
-        <text class="clabel" x="854" y="416">OLED</text><text class="csub" x="854" y="433">SSD1306 0x3C</text>
-        <circle class="dot" cx="840" cy="410" r="4"/><text class="pin" x="804" y="406">VCC</text>
-        <circle class="dot" cx="840" cy="430" r="4"/><text class="pin" x="804" y="426">GND</text>
-        <circle class="dot" cx="840" cy="452" r="4"/><text class="pin" x="802" y="448">SDA</text>
-        <circle class="dot" cx="840" cy="472" r="4"/><text class="pin" x="804" y="468">SCL</text>
-        <rect class="hit" x="840" y="388" width="160" height="86"/>
+        <rect class="body" x="840" y="420" width="160" height="86"/>
+        <text class="clabel" x="854" y="458">OLED</text><text class="csub" x="854" y="475">SSD1306 0x3C</text>
+        <text class="pin" x="870" y="437">SDA</text><text class="pin" x="906" y="437">SCL</text>
+        <circle class="dot" cx="884" cy="420" r="4"/><circle class="dot" cx="920" cy="420" r="4"/>
+        <circle class="dot" cx="840" cy="448" r="4"/><text class="pin" x="804" y="444">VCC</text>
+        <circle class="dot" cx="840" cy="470" r="4"/><text class="pin" x="804" y="466">GND</text>
+        <rect class="hit" x="840" y="420" width="160" height="86"/>
       </g>
       <g class="comp" data-comp="sw">
-        <rect class="body" x="840" y="510" width="160" height="86"/>
-        <text class="clabel" x="854" y="538">MICRO</text><text class="csub" x="854" y="555">SWITCH IP67</text>
-        <text class="csub" x="854" y="582" fill="var(--muted)">NO = capped</text>
-        <circle class="dot" cx="840" cy="545" r="4"/><text class="pin" x="804" y="541">COM</text>
-        <circle class="dot" cx="840" cy="570" r="4"/><text class="pin" x="812" y="566">NC</text>
-        <rect class="hit" x="840" y="510" width="160" height="86"/>
+        <rect class="body" x="840" y="536" width="160" height="86"/>
+        <text class="clabel" x="854" y="564">MICRO</text><text class="csub" x="854" y="581">SWITCH IP67</text>
+        <text class="csub" x="854" y="608">NO = CAPPED</text>
+        <circle class="dot" cx="840" cy="566" r="4"/><text class="pin" x="802" y="562">COM</text>
+        <circle class="dot" cx="840" cy="590" r="4"/><text class="pin" x="810" y="586">NC</text>
+        <rect class="hit" x="840" y="536" width="160" height="86"/>
       </g>
     </svg>
   </div>
 
   <aside class="panel">
     <div class="phead">
-      <div class="eyebrow">Wiring checklist</div>
+      <div class="eyebrow">No-solder wiring checklist</div>
       <h2 id="pTitle">All connections</h2>
       <div class="pbar"><div class="pfill" id="pfill"></div></div>
       <div class="pnum" id="pnum">0 / 0 wired</div>
     </div>
     <div class="clist" id="clist">
       <div class="grp">12V power (fused)</div>
-      <label class="ck-row" data-wire="w-bat-fuse"><input type="checkbox" data-w="w-bat-fuse"><span class="box"></span><span class="dot2" style="background:var(--v12)"></span><span class="txt"><b>Battery +</b> → 5A Fuse</span></label>
-      <label class="ck-row" data-wire="w-fuse-wpos"><input type="checkbox" data-w="w-fuse-wpos"><span class="box"></span><span class="dot2" style="background:var(--v12)"></span><span class="txt"><b>5A Fuse</b> → WAGO (12V+)</span></label>
-      <label class="ck-row" data-wire="w-wpos-buck"><input type="checkbox" data-w="w-wpos-buck"><span class="box"></span><span class="dot2" style="background:var(--v12)"></span><span class="txt"><b>WAGO (12V+)</b> → Buck IN+</span></label>
-      <label class="ck-row" data-wire="w-wpos-relay"><input type="checkbox" data-w="w-wpos-relay"><span class="box"></span><span class="dot2" style="background:var(--v12)"></span><span class="txt"><b>WAGO (12V+)</b> → Relay NO (×2)</span></label>
+      <label class="ck-row" data-wire="w-bat-fuse"><input type="checkbox" data-w="w-bat-fuse"><span class="box"></span><span class="dot2" style="background:var(--v12)"></span><span class="txt"><b>Battery +</b> → 5A fuse</span></label>
+      <label class="ck-row" data-wire="w-fuse-wpos"><input type="checkbox" data-w="w-fuse-wpos"><span class="box"></span><span class="dot2" style="background:var(--v12)"></span><span class="txt"><b>5A fuse</b> → 12V+ hub (WAGO 221-413)</span></label>
+      <label class="ck-row" data-wire="w-wpos-buck"><input type="checkbox" data-w="w-wpos-buck"><span class="box"></span><span class="dot2" style="background:var(--v12)"></span><span class="txt"><b>12V+ hub</b> → Buck IN+</span></label>
+      <label class="ck-row" data-wire="w-wpos-relay"><input type="checkbox" data-w="w-wpos-relay"><span class="box"></span><span class="dot2" style="background:var(--v12)"></span><span class="txt"><b>12V+ hub</b> → Relay NO1 · jumper NO1→NO2</span></label>
 
-      <div class="grp">Ground (WAGO)</div>
-      <label class="ck-row" data-wire="w-bat-wgnd"><input type="checkbox" data-w="w-bat-wgnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>Battery −</b> → WAGO (GND)</span></label>
-      <label class="ck-row" data-wire="w-wgnd-buck"><input type="checkbox" data-w="w-wgnd-buck"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>WAGO (GND)</b> → Buck IN−</span></label>
-      <label class="ck-row" data-wire="w-wgnd-relay"><input type="checkbox" data-w="w-wgnd-relay"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>WAGO (GND)</b> → Relay NC (×2)</span></label>
+      <div class="grp">12V− return (WAGO)</div>
+      <label class="ck-row" data-wire="w-bat-wgnd"><input type="checkbox" data-w="w-bat-wgnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>Battery −</b> → 12V− hub (WAGO 221-413)</span></label>
+      <label class="ck-row" data-wire="w-wgnd-buck"><input type="checkbox" data-w="w-wgnd-buck"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>12V− hub</b> → Buck IN−</span></label>
+      <label class="ck-row" data-wire="w-wgnd-relay"><input type="checkbox" data-w="w-wgnd-relay"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>12V− hub</b> → Relay NC1 · jumper NC1→NC2</span></label>
 
-      <div class="grp">5V rail (logic power)</div>
-      <label class="ck-row" data-wire="w-buck-5v"><input type="checkbox" data-w="w-buck-5v"><span class="box"></span><span class="dot2" style="background:var(--v5)"></span><span class="txt"><b>Buck OUT+</b> → 5V rail</span></label>
-      <label class="ck-row" data-wire="w-nano-5v"><input type="checkbox" data-w="w-nano-5v"><span class="box"></span><span class="dot2" style="background:var(--v5)"></span><span class="txt"><b>Nano 5V</b> → 5V rail</span></label>
-      <label class="ck-row" data-wire="w-oled-5v"><input type="checkbox" data-w="w-oled-5v"><span class="box"></span><span class="dot2" style="background:var(--v5)"></span><span class="txt"><b>OLED VCC</b> → 5V rail</span></label>
-      <label class="ck-row" data-wire="w-relay-5v"><input type="checkbox" data-w="w-relay-5v"><span class="box"></span><span class="dot2" style="background:var(--v5)"></span><span class="txt"><b>Relay VCC</b> → 5V rail</span></label>
+      <div class="grp">5V hub — WAGO 221-415</div>
+      <label class="ck-row" data-wire="w-buck-5v"><input type="checkbox" data-w="w-buck-5v"><span class="box"></span><span class="dot2" style="background:var(--v5)"></span><span class="txt"><b>Buck OUT+</b> → 5V hub <i>(set 5.0V first!)</i></span></label>
+      <label class="ck-row" data-wire="w-nano-5v"><input type="checkbox" data-w="w-nano-5v"><span class="box"></span><span class="dot2" style="background:var(--v5)"></span><span class="txt"><b>5V hub</b> → board 5V terminal</span></label>
+      <label class="ck-row" data-wire="w-oled-5v"><input type="checkbox" data-w="w-oled-5v"><span class="box"></span><span class="dot2" style="background:var(--v5)"></span><span class="txt"><b>5V hub</b> → OLED VCC</span></label>
+      <label class="ck-row" data-wire="w-relay-5v"><input type="checkbox" data-w="w-relay-5v"><span class="box"></span><span class="dot2" style="background:var(--v5)"></span><span class="txt"><b>5V hub</b> → Relay VCC</span></label>
 
-      <div class="grp">GND rail (logic ground)</div>
-      <label class="ck-row" data-wire="w-buck-gnd"><input type="checkbox" data-w="w-buck-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>Buck OUT−</b> → GND rail</span></label>
-      <label class="ck-row" data-wire="w-nano-gnd"><input type="checkbox" data-w="w-nano-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>Nano GND</b> → GND rail</span></label>
-      <label class="ck-row" data-wire="w-oled-gnd"><input type="checkbox" data-w="w-oled-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>OLED GND</b> → GND rail</span></label>
-      <label class="ck-row" data-wire="w-relay-gnd"><input type="checkbox" data-w="w-relay-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>Relay GND</b> → GND rail</span></label>
-      <label class="ck-row" data-wire="w-sw-gnd"><input type="checkbox" data-w="w-sw-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>Micro switch NC</b> → GND rail</span></label>
+      <div class="grp">GND hub — WAGO 221-415</div>
+      <label class="ck-row" data-wire="w-buck-gnd"><input type="checkbox" data-w="w-buck-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>Buck OUT−</b> → GND hub</span></label>
+      <label class="ck-row" data-wire="w-nano-gnd"><input type="checkbox" data-w="w-nano-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>GND hub</b> → board GND terminal</span></label>
+      <label class="ck-row" data-wire="w-oled-gnd"><input type="checkbox" data-w="w-oled-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>GND hub</b> → OLED GND</span></label>
+      <label class="ck-row" data-wire="w-relay-gnd"><input type="checkbox" data-w="w-relay-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>GND hub</b> → Relay GND</span></label>
+      <label class="ck-row" data-wire="w-sw-gnd"><input type="checkbox" data-w="w-sw-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>GND hub</b> → IP67 switch NC</span></label>
+
+      <div class="grp">I²C bus — OLED + RTC share it</div>
+      <label class="ck-row" data-wire="w-a4"><input type="checkbox" data-w="w-a4"><span class="box"></span><span class="dot2" style="background:var(--i2c)"></span><span class="txt"><b>Board A4</b> → SDA hub (WAGO)</span></label>
+      <label class="ck-row" data-wire="w-a5"><input type="checkbox" data-w="w-a5"><span class="box"></span><span class="dot2" style="background:var(--i2c)"></span><span class="txt"><b>Board A5</b> → SCL hub (WAGO)</span></label>
+      <label class="ck-row" data-wire="w-oled-sda"><input type="checkbox" data-w="w-oled-sda"><span class="box"></span><span class="dot2" style="background:var(--i2c)"></span><span class="txt"><b>SDA hub</b> → OLED SDA</span></label>
+      <label class="ck-row" data-wire="w-oled-scl"><input type="checkbox" data-w="w-oled-scl"><span class="box"></span><span class="dot2" style="background:var(--i2c)"></span><span class="txt"><b>SCL hub</b> → OLED SCL</span></label>
+      <label class="ck-row" data-wire="w-rtc-sda"><input type="checkbox" data-w="w-rtc-sda"><span class="box"></span><span class="dot2" style="background:var(--i2c)"></span><span class="txt"><b>SDA hub</b> → RTC SDA</span></label>
+      <label class="ck-row" data-wire="w-rtc-scl"><input type="checkbox" data-w="w-rtc-scl"><span class="box"></span><span class="dot2" style="background:var(--i2c)"></span><span class="txt"><b>SCL hub</b> → RTC SCL</span></label>
+
+      <div class="grp">RTC power — board spare terminals</div>
+      <label class="ck-row" data-wire="w-rtc-5v"><input type="checkbox" data-w="w-rtc-5v"><span class="box"></span><span class="dot2" style="background:var(--v5)"></span><span class="txt"><b>Board spare 5V</b> → RTC VCC</span></label>
+      <label class="ck-row" data-wire="w-rtc-gnd"><input type="checkbox" data-w="w-rtc-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>Board spare GND</b> → RTC GND</span></label>
 
       <div class="grp">Signals</div>
-      <label class="ck-row" data-wire="w-a4"><input type="checkbox" data-w="w-a4"><span class="box"></span><span class="dot2" style="background:var(--i2c)"></span><span class="txt"><b>Nano A4</b> → OLED SDA</span></label>
-      <label class="ck-row" data-wire="w-a5"><input type="checkbox" data-w="w-a5"><span class="box"></span><span class="dot2" style="background:var(--i2c)"></span><span class="txt"><b>Nano A5</b> → OLED SCL</span></label>
-      <label class="ck-row" data-wire="w-d2"><input type="checkbox" data-w="w-d2"><span class="box"></span><span class="dot2" style="background:var(--rc)"></span><span class="txt"><b>Nano D2</b> → Relay IN1 (extend)</span></label>
-      <label class="ck-row" data-wire="w-d3"><input type="checkbox" data-w="w-d3"><span class="box"></span><span class="dot2" style="background:var(--rc)"></span><span class="txt"><b>Nano D3</b> → Relay IN2 (retract)</span></label>
-      <label class="ck-row" data-wire="w-d4"><input type="checkbox" data-w="w-d4"><span class="box"></span><span class="dot2" style="background:var(--lid)"></span><span class="txt"><b>Nano D4</b> → Micro switch COM</span></label>
-      <label class="ck-row" data-wire="w-kp"><input type="checkbox" data-w="w-kp"><span class="box"></span><span class="dot2" style="background:var(--kpad)"></span><span class="txt"><b>Nano D6–D13</b> → Keypad (8 wires)</span></label>
+      <label class="ck-row" data-wire="w-d2"><input type="checkbox" data-w="w-d2"><span class="box"></span><span class="dot2" style="background:var(--rc)"></span><span class="txt"><b>Relay IN1</b> → D2 (extend)</span></label>
+      <label class="ck-row" data-wire="w-d3"><input type="checkbox" data-w="w-d3"><span class="box"></span><span class="dot2" style="background:var(--rc)"></span><span class="txt"><b>Relay IN2</b> → D3 (retract)</span></label>
+      <label class="ck-row" data-wire="w-d4"><input type="checkbox" data-w="w-d4"><span class="box"></span><span class="dot2" style="background:var(--lid)"></span><span class="txt"><b>Switch COM</b> → D4</span></label>
+      <label class="ck-row" data-wire="w-kp"><input type="checkbox" data-w="w-kp"><span class="box"></span><span class="dot2" style="background:var(--kpad)"></span><span class="txt"><b>Keypad 1–8</b> → D6–D13 (8 Dupont)</span></label>
 
       <div class="grp">Actuator (12V switched)</div>
-      <label class="ck-row" data-wire="w-coma"><input type="checkbox" data-w="w-coma"><span class="box"></span><span class="dot2" style="background:var(--act)"></span><span class="txt"><b>Relay COM 1</b> → Actuator lead A</span></label>
-      <label class="ck-row" data-wire="w-comb"><input type="checkbox" data-w="w-comb"><span class="box"></span><span class="dot2" style="background:var(--act)"></span><span class="txt"><b>Relay COM 2</b> → Actuator lead B</span></label>
+      <label class="ck-row" data-wire="w-coma"><input type="checkbox" data-w="w-coma"><span class="box"></span><span class="dot2" style="background:var(--act)"></span><span class="txt"><b>Relay CH1 COM</b> → Actuator lead A</span></label>
+      <label class="ck-row" data-wire="w-comb"><input type="checkbox" data-w="w-comb"><span class="box"></span><span class="dot2" style="background:var(--act)"></span><span class="txt"><b>Relay CH2 COM</b> → Actuator lead B</span></label>
 
-      <div class="grp">Optional — battery sense</div>
-      <label class="ck-row" data-wire="w-bs"><input type="checkbox" data-w="w-bs"><span class="box"></span><span class="dot2" style="background:var(--bs)"></span><span class="txt"><b>Batt+</b> →100k→ <b>A0</b> →33k→ GND</span></label>
+      <div class="grp">Solar add-on — battery side first</div>
+      <label class="ck-row" data-wire="w-sol-batp"><input type="checkbox" data-w="w-sol-batp"><span class="box"></span><span class="dot2" style="background:var(--sol)"></span><span class="txt"><b>Ctrl BAT+</b> → Battery + tab (opt. inline fuse)</span></label>
+      <label class="ck-row" data-wire="w-sol-batn"><input type="checkbox" data-w="w-sol-batn"><span class="box"></span><span class="dot2" style="background:var(--sol)"></span><span class="txt"><b>Ctrl BAT−</b> → 12V− hub (use a 221-415 here)</span></label>
+      <label class="ck-row" data-wire="w-sol-pvp"><input type="checkbox" data-w="w-sol-pvp"><span class="box"></span><span class="dot2" style="background:var(--sol)"></span><span class="txt"><b>Panel +</b> → M12 gland → <b>Ctrl PV+</b></span></label>
+      <label class="ck-row" data-wire="w-sol-pvn"><input type="checkbox" data-w="w-sol-pvn"><span class="box"></span><span class="dot2" style="background:var(--sol)"></span><span class="txt"><b>Panel −</b> → M12 gland → <b>Ctrl PV−</b></span></label>
+
+      <div class="grp">Optional — battery sense (only soldered part)</div>
+      <label class="ck-row" data-wire="w-bs"><input type="checkbox" data-w="w-bs"><span class="box"></span><span class="dot2" style="background:var(--bs)"></span><span class="txt"><b>Batt+</b> →100k→ <b>A0</b> →33k→ GND (+100nF)</span></label>
     </div>
   </aside>
 </div>
 
+<div class="rules">
+  <div class="rule"><b>1 · Buck first</b>Set the buck to 5.0V alone, with nothing else connected — before the Nano is ever wired in.</div>
+  <div class="rule"><b>2 · Unlock = retract</b>If unlock EXTENDS the rod, swap the two actuator leads at the relay COMs. Never edit the firmware.</div>
+  <div class="rule"><b>3 · 12V stays on WAGO</b>Battery/actuator power never touches the logic board. Air-gapped, ferrule every stranded end.</div>
+  <div class="rule"><b>4 · Keypad = Dupont only</b>Never put heat on the membrane tail — it plugs straight into the screw-board terminals.</div>
+  <div class="rule"><b>5 · Solar order</b>Controller → battery FIRST, then the panel (reverse to service). LOAD terminals stay EMPTY by design — the latch keeps its own fused line to the battery.</div>
+  <div class="rule"><b>6 · RTC prep</b>LIR2032 only — the module charges its cell (a CR2032 must never go in). Snip the module's power LED (~13Ah/yr wasted).</div>
+</div>
+
 <script>
 (function(){
-  const LS="oneLatchWiringV2";
+  const LS="oneLatchWiringV3";
   const store = JSON.parse(localStorage.getItem(LS) || "{}");
   const body=document.body, svg=document.querySelector('svg');
   const wires=Array.from(svg.querySelectorAll('.wire'));
