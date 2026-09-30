@@ -3,355 +3,879 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>THE ONE LATCH — Interactive Wiring Diagram</title>
+<title>The One Latch Wiring Diagram (current design)</title>
+<meta name="description" content="Interactive wiring diagram for The One Latch control box, current design. Wiring only.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --steel-950:#0f1316;--steel-900:#14191d;--steel-850:#191f24;--steel-800:#1f262c;
-    --steel-700:#28313a;--line:#37424c;--text:#e9edf0;--muted:#8b97a1;--amber:#ffb20a;--green:#46c46b;
-    --v12:#ff8c2a;--v5:#ff5a52;--gnd:#6b7780;--i2c:#2fd6d6;--kpad:#5fcf6b;
-    --rc:#b48bff;--lid:#e879c9;--act:#eef2f5;--bs:#ffd23f;
+    color-scheme:light dark;
+    --bg:#eef1f3;--grid:#e2e7ea;--panel:#ffffff;--panel2:#f3f6f7;--board:#fbfcfc;--comp:#eef2f4;--compfocus:#fff3d2;
+    --line:#c2cbd2;--text:#1b2328;--muted:#56636d;--amber:#8a5a00;--amberbg:rgba(138,90,0,.08);
+    --badge:#ffb20a;--badgetext:#14191d;--ok:#1e7438;--headbg:rgba(238,241,243,.95);
+    --p12:#dc6600;--p5:#b3201a;--gnd:#5b6771;--i2c:#0c989a;--kpad:#2c963b;--rc:#7450cf;--door:#bd3795;--act:#6d3b1f;--pv:#2d70b3;
+    --p12t:#a84e00;
+    --z12:rgba(220,102,0,.05);--z5:rgba(179,32,26,.04);--zh:rgba(91,103,113,.07);
     --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
     --sans:'IBM Plex Sans',-apple-system,Segoe UI,sans-serif;--disp:'Oswald',sans-serif;
   }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0f1316;--grid:#14191d;--panel:#191f24;--panel2:#1f262c;--board:#14191d;--comp:#1f262c;--compfocus:#23303a;
+      --line:#37424c;--text:#e9edf0;--muted:#8b97a1;--amber:#ffb20a;--amberbg:rgba(255,178,10,.07);
+      --ok:#46c46b;--headbg:rgba(15,19,22,.93);
+      --p12:#ff8c2a;--p5:#e8433b;--gnd:#6b7780;--i2c:#2fd6d6;--kpad:#5fcf6b;--rc:#b48bff;--door:#e879c9;--act:#eef2f5;--pv:#5b9bd5;
+      --p12t:#ff8c2a;
+      --z12:rgba(255,140,42,.045);--z5:rgba(232,67,59,.04);--zh:rgba(139,151,161,.05);
+    }
+  }
+  :root[data-theme="light"]{color-scheme:light}
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#0f1316;--grid:#14191d;--panel:#191f24;--panel2:#1f262c;--board:#14191d;--comp:#1f262c;--compfocus:#23303a;
+    --line:#37424c;--text:#e9edf0;--muted:#8b97a1;--amber:#ffb20a;--amberbg:rgba(255,178,10,.07);
+    --ok:#46c46b;--headbg:rgba(15,19,22,.93);
+    --p12:#ff8c2a;--p5:#e8433b;--gnd:#6b7780;--i2c:#2fd6d6;--kpad:#5fcf6b;--rc:#b48bff;--door:#e879c9;--act:#eef2f5;--pv:#5b9bd5;
+    --p12t:#ff8c2a;
+    --z12:rgba(255,140,42,.045);--z5:rgba(232,67,59,.04);--zh:rgba(139,151,161,.05);
+  }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:var(--sans);background:var(--steel-950);color:var(--text);
-    background-image:linear-gradient(var(--steel-900) 1px,transparent 1px),linear-gradient(90deg,var(--steel-900) 1px,transparent 1px);
-    background-size:32px 32px;-webkit-font-smoothing:antialiased;min-height:100vh}
-  header{border-bottom:1px solid var(--line);padding:14px 22px;display:flex;align-items:center;gap:14px;
-    background:linear-gradient(180deg,rgba(15,19,22,.97),rgba(15,19,22,.8));position:sticky;top:0;z-index:5;backdrop-filter:blur(8px)}
-  .badge{font-family:var(--disp);font-weight:700;font-size:13px;letter-spacing:.18em;color:var(--steel-950);
-    background:var(--amber);padding:6px 10px;clip-path:polygon(0 0,100% 0,92% 100%,0 100%)}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:32px 32px;-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
+  header{border-bottom:1px solid var(--line);padding:14px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    background:var(--headbg);position:sticky;top:0;z-index:5}
+  .badge{font-family:var(--disp);font-weight:700;font-size:13px;letter-spacing:.18em;color:var(--badgetext);
+    background:var(--badge);padding:6px 10px;clip-path:polygon(0 0,100% 0,92% 100%,0 100%)}
   header h1{font-family:var(--disp);font-weight:600;font-size:18px;letter-spacing:.05em}
   header p{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.2em;margin-top:2px}
   .hint{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right}
 
-  .legend{display:flex;flex-wrap:wrap;gap:7px;padding:14px 22px 4px}
-  .lg{font-family:var(--mono);font-size:11px;cursor:pointer;background:var(--steel-850);
+  .intro{padding:16px 22px 2px;max-width:980px}
+  .intro p{font-size:14px;line-height:1.55;margin-bottom:8px}
+  .intro .scope{font-family:var(--mono);font-size:12px;color:var(--amber);letter-spacing:.02em}
+  .intro .how{font-size:13px;color:var(--muted)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:7px;padding:10px 22px 4px}
+  .lg{font-family:var(--mono);font-size:11px;cursor:pointer;background:var(--panel);
     border:1px solid var(--line);color:var(--muted);padding:6px 11px;display:flex;align-items:center;gap:7px;transition:.15s;user-select:none}
-  .lg:hover{color:var(--text);border-color:var(--muted)}.lg.on{color:var(--text);border-color:currentColor}
+  .lg:hover{color:var(--text);border-color:var(--muted)}.lg.on{color:var(--text);border-color:var(--amber)}
+  .lg:focus-visible,.comp:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+  .comp:focus-visible rect.body{stroke:var(--amber);stroke-width:3}
   .sw{width:13px;height:4px;border-radius:2px;flex:0 0 auto}
   .lg .reset{font-family:var(--disp);letter-spacing:.1em;text-transform:uppercase}
+  .sublegend{display:flex;flex-wrap:wrap;gap:7px;align-items:center;padding:4px 22px 2px}
+  .sublegend[hidden]{display:none}
+  .sublegend .subhint{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .lg.sub{padding:4px 9px;font-size:10.5px}
 
-  .stage{display:flex;gap:18px;padding:14px 22px 30px;align-items:flex-start;flex-wrap:wrap}
-  .board{flex:1 1 580px;min-width:320px;background:var(--steel-900);border:1px solid var(--line)}
-  svg{display:block;width:100%;height:auto}
+  .stage{display:flex;gap:18px;padding:12px 22px 26px;align-items:flex-start}
+  .board{flex:1 1 auto;min-width:0;background:var(--board);border:1px solid var(--line)}
+  .board svg{display:block;width:100%;height:auto}
+  .board.zoomed{overflow-x:auto}
+  .board.zoomed svg{width:1500px;max-width:none}
 
-  .panel{flex:0 0 320px;background:var(--steel-850);border:1px solid var(--line);position:sticky;top:80px;max-height:calc(100vh - 100px);display:flex;flex-direction:column}
+  .panel{flex:0 0 340px;background:var(--panel);border:1px solid var(--line);position:sticky;top:80px;max-height:calc(100vh - 100px);display:flex;flex-direction:column;min-width:0}
   .phead{padding:16px 16px 12px;border-bottom:1px solid var(--line)}
   .phead .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--amber);text-transform:uppercase}
-  .phead h2{font-family:var(--disp);font-weight:600;font-size:17px;letter-spacing:.04em;margin-top:5px;text-transform:uppercase}
-  .pbar{height:6px;background:var(--steel-800);border:1px solid var(--line);margin-top:10px;overflow:hidden}
-  .pfill{height:100%;width:0;background:var(--green);transition:width .35s}
-  .pnum{font-family:var(--mono);font-size:11px;color:var(--green);margin-top:6px;letter-spacing:.05em}
+  .phead h2{font-family:var(--disp);font-weight:600;font-size:17px;letter-spacing:.04em;margin-top:5px}
+  .pbar{height:6px;background:var(--panel2);border:1px solid var(--line);margin-top:10px;overflow:hidden}
+  .pfill{height:100%;width:0;background:var(--ok);transition:width .35s}
+  .pnum{font-family:var(--mono);font-size:11px;color:var(--ok);margin-top:6px;letter-spacing:.05em}
   .clist{overflow-y:auto;padding:8px 10px 14px}
   .grp{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin:14px 6px 4px}
-  .ck-row{display:flex;align-items:center;gap:9px;padding:7px 8px;cursor:pointer;border:1px solid transparent;transition:.12s}
-  .ck-row:hover{background:var(--steel-800);border-color:var(--line)}
-  .ck-row input{position:absolute;opacity:0;width:0;height:0}
-  .box{flex:0 0 auto;width:17px;height:17px;border:2px solid var(--line);background:var(--steel-900);display:grid;place-items:center;transition:.12s}
+  .ck-row{display:flex;align-items:flex-start;gap:9px;padding:7px 8px;cursor:pointer;border:1px solid transparent;transition:.12s;position:relative}
+  .ck-row:hover{background:var(--panel2);border-color:var(--line)}
+  .ck-row input{position:absolute;opacity:0;width:1px;height:1px}
+  .ck-row input:focus-visible + .box{outline:2px solid var(--amber);outline-offset:2px}
+  .box{flex:0 0 auto;width:17px;height:17px;border:2px solid var(--line);background:var(--board);display:grid;place-items:center;transition:.12s;margin-top:1px}
   .ck-row:hover .box{border-color:var(--amber)}
-  .ck-row:has(input:checked) .box{background:var(--green);border-color:var(--green)}
-  .box::after{content:"";width:4px;height:8px;border:solid var(--steel-950);border-width:0 2.5px 2.5px 0;transform:rotate(45deg) scale(0);transition:.12s;margin-bottom:2px}
-  .ck-row:has(input:checked) .box::after{transform:rotate(45deg) scale(1)}
-  .dot2{width:9px;height:9px;border-radius:2px;flex:0 0 auto}
-  .ck-row .txt{font-size:12.5px;line-height:1.35}
-  .ck-row:has(input:checked) .txt{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+  .ck-row.done .box{background:var(--ok);border-color:var(--ok)}
+  .box::after{content:"";width:4px;height:8px;border:solid var(--board);border-width:0 2.5px 2.5px 0;transform:rotate(45deg) scale(0);transition:.12s;margin-bottom:2px}
+  .ck-row.done .box::after{transform:rotate(45deg) scale(1)}
+  .dot2{width:9px;height:9px;border-radius:2px;flex:0 0 auto;margin-top:5px}
+  .ck-row .txt{font-size:12.5px;line-height:1.4}
+  .ck-row.done .txt{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
   .ck-row .txt b{font-family:var(--mono);font-weight:600;color:inherit}
 
-  .zone{fill-opacity:1;stroke:var(--line);stroke-dasharray:3 4}
-  .zone.z12{fill:rgba(255,140,42,.045)} .zone.z5{fill:rgba(95,207,107,.04)}
+  .ccard{border-bottom:1px solid var(--line);padding:12px 14px;overflow-y:auto;max-height:55vh}
+  .ccard .model{font-family:var(--mono);font-size:11px;color:var(--amber);line-height:1.45;margin-bottom:6px}
+  .ccard .cdesc{font-size:12.5px;color:var(--text);line-height:1.5;margin-bottom:8px}
+  .ccard .cw{display:flex;align-items:flex-start;gap:8px;padding:6px 6px;border:1px solid transparent}
+  .ccard .cw.link{cursor:pointer}
+  .ccard .cw.link:hover{background:var(--panel2);border-color:var(--line)}
+  .ccard .cw.link:focus-visible{outline:2px solid var(--amber);outline-offset:1px}
+  .ccard .cw .t{font-size:12.5px;line-height:1.4}
+  .ccard .cw.done .t{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+  .note b,.ccard b{font-weight:600}
+  .ccard .sect{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin:10px 2px 4px}
+  .ccard .warn{border:1px solid var(--amber);background:var(--amberbg);padding:8px 10px;font-size:12px;line-height:1.45;margin-top:8px}
+  .ccard .warn b{color:var(--amber)}
+  .ccard .close{font-family:var(--mono);font-size:11px;color:var(--muted);background:none;border:1px solid var(--line);padding:4px 8px;cursor:pointer;margin-top:10px}
+
+  .notes{padding:4px 22px 40px}
+  .notes h2{font-family:var(--disp);font-weight:600;font-size:17px;letter-spacing:.05em;text-transform:uppercase;margin:6px 0 10px}
+  .ngrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+  .note{background:var(--panel);border:1px solid var(--line);padding:12px 14px}
+  .note h3{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
+  .note p{font-size:13px;line-height:1.5}
+  .note.bench h3{color:var(--muted)}
+  .foot{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6}
+
+  /* drawing */
+  .zone{stroke:var(--line);stroke-width:1}
+  .zone.z12{fill:var(--z12)} .zone.z5{fill:var(--z5)} .zone.zh{fill:var(--zh)}
+  .grpbox{fill:none;stroke:var(--line);stroke-width:1}
   .zlabel{font-family:var(--disp);font-weight:600;font-size:15px;letter-spacing:.1em;pointer-events:none;text-transform:uppercase}
-  .comp rect{fill:var(--steel-800);stroke:var(--line);stroke-width:1.5;transition:.15s}
+  .zlabel.zl12{fill:var(--p12t)} .zlabel.zl5{fill:var(--p5)} .zlabel.zlh{fill:var(--muted)}
+  .usb{fill:var(--panel2);stroke:var(--muted);stroke-width:1.2}
+  .glabel{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;fill:var(--muted);pointer-events:none}
+  .comp rect.body{fill:var(--comp);stroke:var(--line);stroke-width:1.5;transition:.15s}
+  .comp.nw rect.body{fill:var(--board)}
   .comp .hit{fill:transparent;cursor:pointer}
-  .comp:hover rect.body{stroke:var(--amber)}.comp.focus rect.body{stroke:var(--amber);fill:#23303a}
+  .comp:hover rect.body,.comp.focus rect.body{stroke:var(--amber)}
+  .comp.focus rect.body{fill:var(--compfocus)}
   .clabel{font-family:var(--disp);font-weight:600;font-size:12px;fill:var(--text);letter-spacing:.03em;pointer-events:none;text-transform:uppercase}
-  .csub{font-family:var(--mono);font-size:8.5px;fill:var(--muted);pointer-events:none;letter-spacing:.04em}
+  .clabel.keep{text-transform:none}
+  .csub{font-family:var(--mono);font-size:8.5px;fill:var(--muted);pointer-events:none;letter-spacing:.03em}
+  .tag{font-family:var(--mono);font-size:8.5px;fill:var(--amber);pointer-events:none;letter-spacing:.03em}
   .pin{font-family:var(--mono);font-size:9px;fill:var(--muted);pointer-events:none}
-  .dot{fill:var(--steel-950);stroke:var(--muted);stroke-width:1.5}
-  .rail{stroke-width:10;stroke-linecap:round}.rail.r5{stroke:var(--v5)}.rail.rg{stroke:var(--gnd)}
-  .raillabel{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;pointer-events:none}
-  .wire{fill:none;stroke-width:2.4;transition:opacity .15s,stroke-width .15s;opacity:.9}
-  .wire.net-v12{stroke:var(--v12)}.wire.net-v5{stroke:var(--v5)}.wire.net-gnd{stroke:var(--gnd)}
-  .wire.net-i2c{stroke:var(--i2c)}.wire.net-kpad{stroke:var(--kpad);stroke-width:4}
-  .wire.net-rc{stroke:var(--rc)}.wire.net-lid{stroke:var(--lid)}.wire.net-act{stroke:var(--act)}
-  .wire.net-bs{stroke:var(--bs);stroke-dasharray:6 5}
-  .sel .wire{opacity:.06}.sel .wire.hot{opacity:1;stroke-width:5}
-  .sel .comp{opacity:.3}.sel .comp.focus{opacity:1}
-  @media(max-width:820px){.panel{flex:1 1 100%;position:static;max-height:none}}
+  .sn{font-family:var(--mono);font-size:8px;fill:var(--muted);pointer-events:none}
+  .dot{fill:var(--board);stroke:var(--muted);stroke-width:1.5}
+  .dot.nc{fill:none;stroke:var(--line);stroke-width:1.2}
+  .capmark{fill:var(--muted)}
+  .wire{fill:none;stroke-width:2.4;transition:opacity .15s,stroke-width .15s;opacity:.92;stroke-linejoin:round}
+  .wire.net-p12{stroke:var(--p12)}.wire.net-p5{stroke:var(--p5)}.wire.net-gnd{stroke:var(--gnd)}
+  .wire.net-i2c{stroke:var(--i2c)}.wire.net-kpad{stroke:var(--kpad);stroke-width:3.2}
+  .wire.net-rc{stroke:var(--rc)}.wire.net-door{stroke:var(--door)}.wire.net-act{stroke:var(--act)}
+  .wire.net-pv{stroke:var(--pv)}.wire.lead{stroke:var(--muted);stroke-width:1.6}
+  .sel .wire{opacity:.08}.sel .wire.hot{opacity:1;stroke-width:4.5}
+  .sel .comp{opacity:.32}.sel .comp.focus{opacity:1}
+
+  @media (max-width:900px){
+    .stage{flex-direction:column;align-items:stretch}
+    .board{width:100%}
+    .panel{flex:1 1 auto;width:100%;position:static;max-height:none;scroll-margin-top:84px}
+    .ccard{max-height:none}
+  }
+  @media (max-width:700px){.hint{display:none}}
+  @media (max-width:600px){
+    header{position:static;padding:12px 16px}
+    .panel{scroll-margin-top:12px}
+    .intro,.legend,.sublegend,.stage,.notes{padding-left:16px;padding-right:16px}
+    .ngrid{grid-template-columns:1fr}
+  }
 </style>
 </head>
 <body>
 <header>
   <span class="badge">THE ONE LATCH</span>
-  <div><h1>Wiring Diagram</h1><p>SMART LOCK WIRING VISUALIZER</p></div>
-  <div class="hint">hover to preview · click to lock<br>check off each wire as you go</div>
+  <div><h1>Wiring Diagram</h1><p>Current design</p></div>
+  <div class="hint">tap or click a part for its wire card<br>hover to trace &middot; tick off each wire as you build</div>
 </header>
 
+<section class="intro">
+  <p>Wiring for The One Latch control box in its current design. A 12&nbsp;V LiFePO4 battery is charged by a small solar panel through a charge controller. A 5&nbsp;A main fuse feeds the 12V+ hub, one of four labelled lever-nut hubs (12V+, GND, 5V, LGND). An LM2596 buck supplies 5&nbsp;V to an Arduino Nano on a screw-terminal shield. Two relays reverse the 12&nbsp;V latch actuator. The page also covers a Wiegand keypad, a switch that reads the latch's own door, and an I2C screen and clock. Tap a part to see what it connects to, and tick each wire off as you build.</p>
+  <p class="scope">This page shows wiring only: parts, pins, wires and build checks.</p>
+  <p class="how">Wires that cross without a dot are not connected. Line colours show the circuit, not the wire's insulation colour; where the insulation colour matters, the card and the checklist name it. Hub slots are numbered 1 to 5. Wire codes (A1, B3, C13...) in the wire cards match the checklist; hover a checklist row to light its wire.</p>
+</section>
+
 <div class="legend" id="legend">
-  <div class="lg" data-net="v12"><span class="sw" style="background:var(--v12)"></span>12V+</div>
-  <div class="lg" data-net="gnd"><span class="sw" style="background:var(--gnd)"></span>GND</div>
-  <div class="lg" data-net="v5"><span class="sw" style="background:var(--v5)"></span>5V rail</div>
-  <div class="lg" data-net="i2c"><span class="sw" style="background:var(--i2c)"></span>I²C</div>
-  <div class="lg" data-net="kpad"><span class="sw" style="background:var(--kpad)"></span>Keypad</div>
-  <div class="lg" data-net="rc"><span class="sw" style="background:var(--rc)"></span>Relay ctrl</div>
-  <div class="lg" data-net="lid"><span class="sw" style="background:var(--lid)"></span>Lid sensor</div>
-  <div class="lg" data-net="act"><span class="sw" style="background:var(--act)"></span>Actuator</div>
-  <div class="lg" data-net="bs"><span class="sw" style="background:var(--bs)"></span>Batt-sense (opt)</div>
-  <div class="lg" id="resetBtn"><span class="reset">↺ show all</span></div>
+  <div class="lg" data-net="p12" tabindex="0" role="button"><span class="sw" style="background:var(--p12)"></span>12 V (battery + and fused)</div>
+  <div class="lg" data-net="gnd" tabindex="0" role="button"><span class="sw" style="background:var(--gnd)"></span>Ground (GND + LGND)</div>
+  <div class="lg" data-net="p5" tabindex="0" role="button"><span class="sw" style="background:var(--p5)"></span>5 V logic</div>
+  <div class="lg" data-net="i2c" tabindex="0" role="button"><span class="sw" style="background:var(--i2c)"></span>I2C (SDA, SCL)</div>
+  <div class="lg" data-net="rc" tabindex="0" role="button"><span class="sw" style="background:var(--rc)"></span>Relay control (D2, D3)</div>
+  <div class="lg" data-net="door" tabindex="0" role="button"><span class="sw" style="background:var(--door)"></span>Latch-door switch (D4)</div>
+  <div class="lg" data-net="kpad" tabindex="0" role="button"><span class="sw" style="background:var(--kpad)"></span>Keypad data (D6, D7)</div>
+  <div class="lg" data-net="act" tabindex="0" role="button"><span class="sw" style="background:var(--act)"></span>Actuator leads</div>
+  <div class="lg" data-net="pv" tabindex="0" role="button"><span class="sw" style="background:var(--pv)"></span>Solar panel (PV)</div>
+  <div class="lg" id="resetBtn" tabindex="0" role="button"><span class="reset">&#8634; show all</span></div>
+  <div class="lg" id="zoomBtn" tabindex="0" role="button" aria-pressed="false"><span class="reset">&#8853; zoom drawing</span></div>
 </div>
+<div class="sublegend" id="subLegend" hidden></div>
 
 <div class="stage">
-  <div class="board">
-    <svg viewBox="0 0 1040 670" role="img" aria-label="Wiring diagram">
-      <!-- ZONES -->
-      <rect class="zone z12" x="14" y="56" width="494" height="600"/>
-      <rect class="zone z5"  x="520" y="56" width="506" height="600"/>
-      <text class="zlabel" x="30"  y="82" fill="var(--v12)" opacity="0.6">12V POWER &amp; MUSCLE</text>
-      <text class="zlabel" x="540" y="82" fill="var(--green)" opacity="0.6">5V LOGIC &amp; BRAIN</text>
+  <div class="board" id="board">
+    <svg viewBox="0 0 1120 900" role="group" aria-label="Wiring diagram of The One Latch control box">
+      <rect class="zone z12" x="14" y="48" width="540" height="672"/>
+      <rect class="zone z5" x="574" y="48" width="532" height="672"/>
+      <rect class="zone zh" x="14" y="764" width="1092" height="124"/>
+      <text class="zlabel zl12" x="28" y="72">12 V power and muscle</text>
+      <text class="zlabel zl5" x="580" y="72">5 V logic and control</text>
+      <text class="zlabel zlh" x="28" y="788">Latch housing</text>
+      <rect class="grpbox" x="26" y="84" width="516" height="172"/>
+      <text class="glabel" x="38" y="99">SOLAR CHARGING</text>
 
-      <!-- WIRES -->
-      <!-- 12V+ -->
-      <path id="w-bat-fuse"  class="wire net-v12" data-comp="bat fuse"  d="M150 95 L162 95 L162 110 L175 110"/>
-      <path id="w-fuse-wpos" class="wire net-v12" data-comp="fuse wpos" d="M245 110 L270 110"/>
-      <path id="w-wpos-buck" class="wire net-v12" data-comp="wpos buck" d="M400 110 L500 110 L500 190 L545 190"/>
-      <path id="w-wpos-relay" class="wire net-v12" data-comp="wpos relay" d="M335 138 L335 405 L270 405 L270 448 L290 448"/>
-      <!-- GND -->
-      <path id="w-bat-wgnd"  class="wire net-gnd" data-comp="bat wgnd"  d="M150 118 L150 175 L240 175 L240 200"/>
-      <path id="w-wgnd-buck" class="wire net-gnd" data-comp="wgnd buck" d="M305 228 L500 228 L500 214 L545 214"/>
-      <path id="w-wgnd-relay" class="wire net-gnd" data-comp="wgnd relay" d="M240 256 L240 590 L290 590 L290 536"/>
-      <!-- 5V rail taps -->
-      <path id="w-buck-5v"   class="wire net-v5" data-comp="buck rail"  d="M685 190 L685 316"/>
-      <path id="w-nano-5v"   class="wire net-v5" data-comp="nano rail"  d="M590 380 L590 316"/>
-      <path id="w-oled-5v"   class="wire net-v5" data-comp="oled rail"  d="M840 410 L862 410 L862 316"/>
-      <path id="w-relay-5v"  class="wire net-v5" data-comp="relay rail" d="M460 445 L522 445 L522 316 L560 316"/>
-      <!-- GND rail taps -->
-      <path id="w-buck-gnd"  class="wire net-gnd" data-comp="buck rail" d="M685 214 L712 214 L712 344"/>
-      <path id="w-nano-gnd"  class="wire net-gnd" data-comp="nano rail" d="M620 380 L620 344"/>
-      <path id="w-oled-gnd"  class="wire net-gnd" data-comp="oled rail" d="M840 430 L882 430 L882 344"/>
-      <path id="w-relay-gnd" class="wire net-gnd" data-comp="relay rail" d="M460 468 L506 468 L506 344 L560 344"/>
-      <path id="w-sw-gnd"    class="wire net-gnd" data-comp="sw rail"    d="M840 570 L902 570 L902 344"/>
-      <!-- I2C -->
-      <path id="w-a4" class="wire net-i2c" data-comp="nano oled" d="M735 415 L788 415 L788 452 L840 452"/>
-      <path id="w-a5" class="wire net-i2c" data-comp="nano oled" d="M735 435 L774 435 L774 472 L840 472"/>
-      <!-- relay control -->
-      <path id="w-d2" class="wire net-rc" data-comp="nano relay" d="M735 465 L758 465 L758 615 L460 615 L460 500"/>
-      <path id="w-d3" class="wire net-rc" data-comp="nano relay" d="M735 485 L772 485 L772 632 L444 632 L444 525 L460 525"/>
-      <!-- lid sensor -->
-      <path id="w-d4" class="wire net-lid" data-comp="nano sw" d="M735 515 L790 515 L790 545 L840 545"/>
-      <!-- keypad -->
-      <path id="w-kp" class="wire net-kpad" data-comp="nano kp" d="M735 548 L760 548 L760 130 L840 130"/>
-      <!-- actuator -->
-      <path id="w-coma" class="wire net-act" data-comp="relay act" d="M290 492 L248 492 L248 465 L210 465"/>
-      <path id="w-comb" class="wire net-act" data-comp="relay act" d="M290 492 L232 492 L232 495 L210 495"/>
-      <!-- battery sense (optional) -->
-      <path id="w-bs" class="wire net-bs" data-comp="nano" d="M735 572 L770 572 L770 600"/>
+      <!-- solar -->
+      <path id="w-SOL4" class="wire net-pv" data-comp="solar_panel glands charge_controller" d="M330 128 L236 128"/>
+      <path id="w-SOL5" class="wire net-pv" data-comp="solar_panel glands charge_controller" d="M330 152 L236 152"/>
+      <path id="w-SOL1" class="wire net-p12 n-batraw" data-comp="battery fuse_controller" d="M150 250 L150 290"/>
+      <path id="w-SOL2" class="wire net-p12 n-ctlbat" data-comp="fuse_controller charge_controller" d="M150 200 L150 210"/>
+      <path id="w-SOL3" class="wire net-gnd" data-comp="battery charge_controller" d="M70 200 L70 290"/>
+      <!-- phase A: battery, main fuse, buck input -->
+      <path id="w-A1" class="wire net-p12 n-batraw" data-comp="battery fuse_main" d="M150 290 L164 276 L214 276"/>
+      <path id="w-A2" class="wire net-p12 n-fused12" data-comp="fuse_main hub_12v" d="M272 276 L284 276 L284 316 L316 316 L316 302"/>
+      <path id="w-A3" class="wire net-gnd" data-comp="battery hub_gnd" d="M70 290 L60 280 L30 280 L30 456 L60 456 L60 440"/>
+      <path id="w-A4" class="wire net-p12 n-fused12" data-comp="hub_12v buck" d="M358 302 L358 326 L560 326 L560 112 L600 112"/>
+      <path id="w-A5" class="wire net-gnd" data-comp="hub_gnd buck" d="M102 440 L102 680 L568 680 L568 144 L600 144"/>
+      <!-- phase D: relay supply and return -->
+      <path id="w-M1" class="wire net-p12 n-fused12" data-comp="hub_12v relay" d="M400 302 L400 384 L280 384 L280 548 L294 548 L302 540"/>
+      <path id="w-M2" class="wire net-p12 n-fused12" data-comp="relay" d="M302 540 L302 572 L321 572 A5 5 0 0 1 331 572 L345 572 A5 5 0 0 1 355 572 L386 572 L386 540"/>
+      <path id="w-M3" class="wire net-gnd" data-comp="hub_gnd relay" d="M144 440 L144 600 L321 600 A5 5 0 0 1 331 600 L350 600 L350 540"/>
+      <path id="w-M4" class="wire net-gnd" data-comp="relay" d="M350 540 L358 552 L381 552 A5 5 0 0 1 391 552 L405 552 A5 5 0 0 1 415 552 L434 552 L434 540"/>
+      <!-- actuator leads, through the PG13.5 gland -->
+      <path id="w-M5" class="wire net-act n-acta" data-comp="relay actuator glands" d="M326 540 L326 660 L484 660 L484 800"/>
+      <path id="w-M6" class="wire net-act n-actb" data-comp="relay actuator glands" d="M410 540 L410 648 L512 648 L512 800"/>
+      <!-- keypad supply -->
+      <path id="w-C11" class="wire net-p12 n-fused12" data-comp="hub_12v keypad" d="M442 302 L442 314 L524 314 L524 698 L984 698 L984 690"/>
+      <path id="w-C12" class="wire net-gnd" data-comp="hub_gnd keypad" d="M186 440 L186 706 L1024 706 L1024 690"/>
+      <!-- phase B: logic power -->
+      <path id="w-B1" class="wire net-p5" data-comp="buck hub_5v" d="M640 160 L640 172 L584 172 L584 250 L620 250 L620 236"/>
+      <path id="w-B2" class="wire net-gnd" data-comp="buck hub_lgnd" d="M720 160 L720 176 L846 176 L846 244 L880 244 L880 236"/>
+      <path id="w-B3" class="wire net-p5" data-comp="hub_5v nano" d="M664 236 L664 330 L692 330 L692 430"/>
+      <path id="w-B4" class="wire net-gnd" data-comp="hub_lgnd nano" d="M924 236 L924 292 L624 292 L624 404 L636 404 L636 430"/>
+      <path id="w-B5" class="wire net-p5" data-comp="hub_5v relay" d="M708 236 L708 272 L590 272 L590 420 L470 420"/>
+      <path id="w-B6" class="wire net-gnd" data-comp="hub_lgnd relay" d="M968 236 L968 282 L598 282 L598 442 L470 442"/>
+      <path id="w-B7" class="wire net-p5" data-comp="hub_5v oled" d="M752 236 L752 262 L980 262 L980 290"/>
+      <path id="w-B8" class="wire net-gnd" data-comp="hub_lgnd oled" d="M1012 236 L1012 290"/>
+      <path id="w-B9" class="wire net-p5" data-comp="hub_5v rtc" d="M796 236 L796 250 L1044 250 L1044 424"/>
+      <path id="w-B10" class="wire net-gnd" data-comp="hub_lgnd rtc" d="M1056 236 L1056 244 L1072 244 L1072 424"/>
+      <!-- phase C: I2C through the two tees -->
+      <path id="w-C1" class="wire net-i2c n-sda" data-comp="nano i2c_tees" d="M764 430 L764 400 L870 400"/>
+      <path id="w-C2" class="wire net-i2c n-sda" data-comp="i2c_tees oled" d="M910 390 L938 390 L938 350 L943 350 A5 5 0 0 1 953 350 L960 350"/>
+      <path id="w-C3" class="wire net-i2c n-sda" data-comp="i2c_tees rtc" d="M910 408 L932 408 L932 460 L960 460"/>
+      <path id="w-C4" class="wire net-i2c n-scl" data-comp="nano i2c_tees" d="M736 430 L736 328 L870 328"/>
+      <path id="w-C5" class="wire net-i2c n-scl" data-comp="i2c_tees oled" d="M910 318 L960 318"/>
+      <path id="w-C6" class="wire net-i2c n-scl" data-comp="i2c_tees rtc" d="M910 336 L948 336 L948 440 L960 440"/>
+      <!-- phase C: relay control -->
+      <path id="w-C7" class="wire net-rc n-in1" data-comp="nano relay" d="M664 526 L664 544 L548 544 L548 470 L470 470"/>
+      <path id="w-C8" class="wire net-rc n-in2" data-comp="nano relay" d="M692 526 L692 556 L536 556 L536 492 L470 492"/>
+      <!-- phase C: latch-door switch, through the PG13.5 gland -->
+      <path id="w-C9" class="wire net-door" data-comp="nano door_switch glands" d="M720 526 L720 610 L624 610 L624 800"/>
+      <path id="w-C10" class="wire net-gnd" data-comp="nano door_switch glands" d="M636 526 L636 596 L600 596 L600 800"/>
+      <path id="w-NO" class="wire lead" data-comp="door_switch glands" d="M648 800 L648 717"/>
+      <!-- phase C: keypad data through 10 kOhm -->
+      <path id="w-C13" class="wire net-kpad n-wg0" data-comp="nano r10k splices keypad" d="M776 526 L776 652 L940 652"/>
+      <path id="w-C14" class="wire net-kpad n-wg1" data-comp="nano r10k splices keypad" d="M804 526 L804 630 L940 630"/>
+      <!-- phase E: A0 strap -->
+      <path id="w-E1" class="wire net-gnd" data-comp="nano a0_strap" d="M820 430 L820 416 L650 416 L636 430"/>
+      <rect class="capmark" x="643" y="711" width="10" height="6"/>
 
-      <!-- RAILS -->
-      <line class="rail r5" x1="560" y1="316" x2="1000" y2="316"/>
-      <line class="rail rg" x1="560" y1="344" x2="1000" y2="344"/>
-      <text class="raillabel" x="564" y="307" fill="var(--v5)">5V RAIL  (from Buck OUT+)</text>
-      <text class="raillabel" x="564" y="366" fill="var(--gnd)">GND RAIL  (logic ground)</text>
-
-      <!-- ===== 12V ZONE COMPONENTS ===== -->
-      <g class="comp" data-comp="bat">
-        <rect class="body" x="40" y="80" width="110" height="60"/>
-        <text class="clabel" x="54" y="108">12V SLA</text><text class="csub" x="54" y="124">BATTERY</text>
-        <circle class="dot" cx="150" cy="95" r="4"/><text class="pin" x="128" y="91">+</text>
-        <circle class="dot" cx="150" cy="118" r="4"/><text class="pin" x="128" y="114">-</text>
-        <rect class="hit" x="40" y="80" width="110" height="60"/>
+      <!-- ===== 12 V side parts ===== -->
+      <g class="comp" data-comp="charge_controller">
+        <rect class="body" x="40" y="108" width="196" height="92"/>
+        <text class="clabel" x="52" y="128">Charge controller</text>
+        <text class="csub" x="52" y="142">RENOGY WANDERER 10 A PWM</text>
+        <text class="tag" x="52" y="156">TYPE: LITHIUM (LI), 12 V</text>
+        <text class="csub" x="52" y="169">BATTERY ON FIRST</text>
+        <text class="tag" x="52" y="181">CHARGE V: CHECK BEFORE SAVING</text>
+        <circle class="dot" cx="236" cy="128" r="4"/><text class="pin" x="206" y="131">PV+</text>
+        <circle class="dot" cx="236" cy="152" r="4"/><text class="pin" x="206" y="155">PV&#8722;</text>
+        <circle class="dot" cx="70" cy="200" r="4"/><text class="pin" x="58" y="193">BAT&#8722;</text>
+        <circle class="dot" cx="150" cy="200" r="4"/><text class="pin" x="138" y="193">BAT+</text>
+        <circle class="dot nc" cx="196" cy="200" r="4"/><circle class="dot nc" cx="220" cy="200" r="4"/>
+        <text class="pin" x="208" y="193" text-anchor="middle">LOAD</text>
+        <text class="tag" x="197" y="216">LOAD: NOT USED</text>
+        <rect class="hit" x="40" y="108" width="196" height="92"/>
+        <rect class="hit" x="196" y="204" width="78" height="16"/>
       </g>
-      <g class="comp" data-comp="fuse">
-        <rect class="body" x="175" y="82" width="70" height="56"/>
-        <text class="clabel" x="186" y="108">5A</text><text class="csub" x="186" y="124">FUSE</text>
-        <circle class="dot" cx="175" cy="110" r="4"/><circle class="dot" cx="245" cy="110" r="4"/>
-        <rect class="hit" x="175" y="82" width="70" height="56"/>
+      <g class="comp" data-comp="solar_panel">
+        <rect class="body" x="330" y="104" width="196" height="72"/>
+        <text class="clabel" x="360" y="126">Solar panel</text>
+        <text class="csub" x="360" y="140">NEWPOWA 12 V, 5 W</text>
+        <text class="csub" x="360" y="153">12 V PANEL, NOT 6 V</text>
+        <text class="csub" x="360" y="166">+ LEAD IS TAPE-MARKED</text>
+        <circle class="dot" cx="330" cy="128" r="4"/><text class="pin" x="338" y="131">+</text>
+        <circle class="dot" cx="330" cy="152" r="4"/><text class="pin" x="338" y="155">&#8722;</text>
+        <rect class="hit" x="330" y="104" width="196" height="72"/>
       </g>
-      <g class="comp" data-comp="wpos">
-        <rect class="body" x="270" y="82" width="130" height="56"/>
-        <text class="clabel" x="284" y="108">WAGO</text><text class="csub" x="284" y="124">12V+ JUNCTION</text>
-        <circle class="dot" cx="270" cy="110" r="4"/><circle class="dot" cx="400" cy="110" r="4"/>
-        <circle class="dot" cx="335" cy="138" r="4"/>
-        <rect class="hit" x="270" y="82" width="130" height="56"/>
+      <g class="comp" data-comp="glands">
+        <rect class="body" x="262" y="114" width="40" height="52"/>
+        <text class="clabel" x="268" y="136">M12</text><text class="csub" x="268" y="150">GLAND</text>
+        <rect class="hit" x="262" y="114" width="40" height="52"/>
+        <rect class="body" x="470" y="724" width="190" height="30"/>
+        <text class="clabel" x="524" y="738">PG13.5 gland</text>
+        <text class="csub" x="524" y="750">5 LEADS, JACKETED</text>
+        <rect class="hit" x="470" y="724" width="190" height="30"/>
       </g>
-      <g class="comp" data-comp="wgnd">
-        <rect class="body" x="175" y="200" width="130" height="56"/>
-        <text class="clabel" x="189" y="226">WAGO</text><text class="csub" x="189" y="242">GND JUNCTION</text>
-        <circle class="dot" cx="240" cy="200" r="4"/><circle class="dot" cx="305" cy="228" r="4"/>
-        <circle class="dot" cx="240" cy="256" r="4"/>
-        <rect class="hit" x="175" y="200" width="130" height="56"/>
+      <g class="comp" data-comp="fuse_controller">
+        <rect class="body" x="117" y="210" width="70" height="40"/>
+        <text class="clabel" x="123" y="224">Ctrl fuse</text>
+        <text class="tag" x="121" y="235">CHECK BEFORE</text>
+        <text class="tag" x="121" y="245">WIRING</text>
+        <circle class="dot" cx="150" cy="210" r="3.5"/><circle class="dot" cx="150" cy="250" r="3.5"/>
+        <rect class="hit" x="109" y="202" width="86" height="56"/>
+      </g>
+      <g class="comp" data-comp="battery">
+        <rect class="body" x="40" y="290" width="150" height="72"/>
+        <circle class="dot" cx="70" cy="290" r="4"/><text class="pin" x="66" y="304">&#8722;</text>
+        <circle class="dot" cx="150" cy="290" r="4"/><text class="pin" x="146" y="304">+</text>
+        <text class="clabel keep" x="52" y="324">12 V LiFePO4</text>
+        <text class="csub" x="52" y="338">GOLDENMATE 12 V 7 Ah</text>
+        <text class="csub" x="52" y="351">BUILT-IN BMS</text>
+        <rect class="hit" x="40" y="290" width="150" height="72"/>
+      </g>
+      <g class="comp" data-comp="fuse_main">
+        <rect class="body" x="214" y="258" width="58" height="36"/>
+        <text class="clabel" x="226" y="274">5 A</text>
+        <text class="csub" x="219" y="287">MAIN FUSE</text>
+        <circle class="dot" cx="214" cy="276" r="4"/><circle class="dot" cx="272" cy="276" r="4"/>
+        <rect class="hit" x="214" y="258" width="58" height="36"/>
+      </g>
+      <g class="comp" data-comp="hub_12v">
+        <rect class="body" x="296" y="262" width="214" height="40"/>
+        <text class="clabel" x="304" y="278">12V+ hub</text>
+        <text class="csub" x="366" y="278">WAGO 221-415, 5 SLOTS</text>
+        <text class="sn" x="316" y="296" text-anchor="middle">1</text><text class="sn" x="358" y="296" text-anchor="middle">2</text><text class="sn" x="400" y="296" text-anchor="middle">3</text><text class="sn" x="442" y="296" text-anchor="middle">4</text><text class="sn" x="484" y="296" text-anchor="middle">5</text>
+        <circle class="dot" cx="316" cy="302" r="4"/><circle class="dot" cx="358" cy="302" r="4"/><circle class="dot" cx="400" cy="302" r="4"/><circle class="dot" cx="442" cy="302" r="4"/><circle class="dot nc" cx="484" cy="302" r="4"/>
+        <rect class="hit" x="296" y="262" width="214" height="40"/>
+      </g>
+      <g class="comp" data-comp="hub_gnd">
+        <rect class="body" x="40" y="400" width="214" height="40"/>
+        <text class="clabel" x="48" y="416">GND hub</text>
+        <text class="csub" x="100" y="416">WAGO 221-415, 5 SLOTS</text>
+        <text class="sn" x="60" y="434" text-anchor="middle">1</text><text class="sn" x="102" y="434" text-anchor="middle">2</text><text class="sn" x="144" y="434" text-anchor="middle">3</text><text class="sn" x="186" y="434" text-anchor="middle">4</text><text class="sn" x="228" y="434" text-anchor="middle">5</text>
+        <circle class="dot" cx="60" cy="440" r="4"/><circle class="dot" cx="102" cy="440" r="4"/><circle class="dot" cx="144" cy="440" r="4"/><circle class="dot" cx="186" cy="440" r="4"/><circle class="dot nc" cx="228" cy="440" r="4"/>
+        <rect class="hit" x="40" y="400" width="214" height="40"/>
       </g>
       <g class="comp" data-comp="relay">
-        <rect class="body" x="290" y="420" width="170" height="150"/>
-        <text class="clabel" x="304" y="448">2-CH</text><text class="csub" x="304" y="464">RELAY MODULE</text>
-        <circle class="dot" cx="290" cy="448" r="4"/><text class="pin" x="298" y="444">NO x2</text>
-        <circle class="dot" cx="290" cy="492" r="4"/><text class="pin" x="298" y="488">COM x2</text>
-        <circle class="dot" cx="290" cy="536" r="4"/><text class="pin" x="298" y="532">NC x2</text>
-        <circle class="dot" cx="460" cy="445" r="4"/><text class="pin" x="424" y="441">VCC</text>
-        <circle class="dot" cx="460" cy="468" r="4"/><text class="pin" x="424" y="464">GND</text>
-        <circle class="dot" cx="460" cy="500" r="4"/><text class="pin" x="424" y="496">IN1</text>
-        <circle class="dot" cx="460" cy="525" r="4"/><text class="pin" x="424" y="521">IN2</text>
-        <rect class="hit" x="290" y="420" width="170" height="150"/>
+        <rect class="body" x="290" y="400" width="180" height="140"/>
+        <text class="clabel" x="302" y="422">2-channel relay</text>
+        <text class="csub" x="302" y="436">5 V COILS, LOW TRIGGER</text>
+        <text class="tag" x="302" y="449">S1 + S2 JUMPERS ON LOW</text>
+        <circle class="dot" cx="470" cy="420" r="4"/><text class="pin" x="464" y="423" text-anchor="end">DC+</text>
+        <circle class="dot" cx="470" cy="442" r="4"/><text class="pin" x="464" y="445" text-anchor="end">DC&#8722;</text>
+        <circle class="dot" cx="470" cy="470" r="4"/><text class="pin" x="464" y="473" text-anchor="end">IN1</text>
+        <circle class="dot" cx="470" cy="492" r="4"/><text class="pin" x="464" y="495" text-anchor="end">IN2</text>
+        <text class="sn" x="302" y="478">ON THE BOARD: RELAY 2 FIRST</text>
+        <text class="sn" x="302" y="489">GO BY THE PRINTED LABELS</text>
+        <text class="csub" x="326" y="516" text-anchor="middle">RELAY 1</text><text class="csub" x="410" y="516" text-anchor="middle">RELAY 2</text>
+        <text class="sn" x="302" y="532" text-anchor="middle">NO1</text><text class="sn" x="326" y="532" text-anchor="middle">COM1</text><text class="sn" x="350" y="532" text-anchor="middle">NC1</text>
+        <text class="sn" x="386" y="532" text-anchor="middle">NO2</text><text class="sn" x="410" y="532" text-anchor="middle">COM2</text><text class="sn" x="434" y="532" text-anchor="middle">NC2</text>
+        <circle class="dot" cx="302" cy="540" r="4"/><circle class="dot" cx="326" cy="540" r="4"/><circle class="dot" cx="350" cy="540" r="4"/>
+        <circle class="dot" cx="386" cy="540" r="4"/><circle class="dot" cx="410" cy="540" r="4"/><circle class="dot" cx="434" cy="540" r="4"/>
+        <rect class="hit" x="290" y="400" width="180" height="140"/>
       </g>
-      <g class="comp" data-comp="act">
-        <rect class="body" x="60" y="438" width="150" height="86"/>
-        <text class="clabel" x="74" y="470">LINEAR</text><text class="csub" x="74" y="486">ACTUATOR 12V</text>
-        <circle class="dot" cx="210" cy="465" r="4"/><text class="pin" x="188" y="461">A</text>
-        <circle class="dot" cx="210" cy="495" r="4"/><text class="pin" x="188" y="491">B</text>
-        <rect class="hit" x="60" y="438" width="150" height="86"/>
+      <g class="comp" data-comp="actuator">
+        <rect class="body" x="330" y="800" width="200" height="70"/>
+        <circle class="dot" cx="484" cy="800" r="4"/><text class="sn" x="484" y="813" text-anchor="middle">RED</text>
+        <circle class="dot" cx="512" cy="800" r="4"/><text class="sn" x="512" y="813" text-anchor="middle">BLK</text>
+        <text class="clabel" x="342" y="828">Linear actuator</text>
+        <text class="csub" x="342" y="842">GOMOTORWORLD LA-T8, 12 V</text>
+        <text class="csub" x="342" y="855">21 MM STROKE, THE LATCH BOLT</text>
+        <rect class="hit" x="330" y="800" width="200" height="70"/>
       </g>
 
-      <!-- ===== 5V ZONE COMPONENTS ===== -->
+      <!-- ===== 5 V side parts ===== -->
       <g class="comp" data-comp="buck">
-        <rect class="body" x="545" y="158" width="140" height="72"/>
-        <text class="clabel" x="559" y="186">LM2596</text><text class="csub" x="559" y="202">BUCK · 5V OUT</text>
-        <circle class="dot" cx="545" cy="190" r="4"/><text class="pin" x="511" y="186">IN+</text>
-        <circle class="dot" cx="545" cy="214" r="4"/><text class="pin" x="513" y="210">IN-</text>
-        <circle class="dot" cx="685" cy="190" r="4"/><text class="pin" x="691" y="186">OUT+</text>
-        <circle class="dot" cx="685" cy="214" r="4"/><text class="pin" x="691" y="210">OUT-</text>
-        <rect class="hit" x="545" y="158" width="140" height="72"/>
+        <rect class="body" x="600" y="96" width="160" height="64"/>
+        <circle class="dot" cx="600" cy="112" r="4"/><text class="pin" x="606" y="115">IN+</text>
+        <circle class="dot" cx="600" cy="144" r="4"/><text class="pin" x="606" y="147">IN&#8722;</text>
+        <circle class="dot" cx="640" cy="160" r="4"/><text class="pin" x="640" y="154" text-anchor="middle">OUT+</text>
+        <circle class="dot" cx="720" cy="160" r="4"/><text class="pin" x="720" y="154" text-anchor="middle">OUT&#8722;</text>
+        <text class="clabel" x="632" y="116">LM2596 buck</text>
+        <text class="csub" x="632" y="130">12 V IN, SET 5.00 V OUT</text>
+        <rect class="hit" x="600" y="96" width="160" height="64"/>
+      </g>
+      <g class="comp" data-comp="splices">
+        <rect class="body" x="880" y="100" width="210" height="50"/>
+        <text class="clabel" x="892" y="121">Inline splices</text>
+        <text class="csub" x="892" y="136">WAGO 221-412, 2-SLOT, x8</text>
+        <rect class="hit" x="880" y="100" width="210" height="50"/>
+        <rect class="body" x="767" y="568" width="18" height="16"/><rect class="body" x="795" y="568" width="18" height="16"/>
+        <rect class="hit" x="763" y="564" width="54" height="24"/>
+      </g>
+      <g class="comp" data-comp="hub_5v">
+        <rect class="body" x="600" y="196" width="220" height="40"/>
+        <text class="clabel" x="608" y="212">5V hub</text>
+        <text class="csub" x="652" y="212">WAGO 221-415, 5 SLOTS</text>
+        <text class="sn" x="620" y="230" text-anchor="middle">1</text><text class="sn" x="664" y="230" text-anchor="middle">2</text><text class="sn" x="708" y="230" text-anchor="middle">3</text><text class="sn" x="752" y="230" text-anchor="middle">4</text><text class="sn" x="796" y="230" text-anchor="middle">5</text>
+        <circle class="dot" cx="620" cy="236" r="4"/><circle class="dot" cx="664" cy="236" r="4"/><circle class="dot" cx="708" cy="236" r="4"/><circle class="dot" cx="752" cy="236" r="4"/><circle class="dot" cx="796" cy="236" r="4"/>
+        <rect class="hit" x="600" y="196" width="220" height="40"/>
+      </g>
+      <g class="comp" data-comp="hub_lgnd">
+        <rect class="body" x="860" y="196" width="220" height="40"/>
+        <text class="clabel" x="868" y="212">LGND hub</text>
+        <text class="csub" x="930" y="212">WAGO 221-415, 5 SLOTS</text>
+        <text class="sn" x="880" y="230" text-anchor="middle">1</text><text class="sn" x="924" y="230" text-anchor="middle">2</text><text class="sn" x="968" y="230" text-anchor="middle">3</text><text class="sn" x="1012" y="230" text-anchor="middle">4</text><text class="sn" x="1056" y="230" text-anchor="middle">5</text>
+        <circle class="dot" cx="880" cy="236" r="4"/><circle class="dot" cx="924" cy="236" r="4"/><circle class="dot" cx="968" cy="236" r="4"/><circle class="dot" cx="1012" cy="236" r="4"/><circle class="dot" cx="1056" cy="236" r="4"/>
+        <rect class="hit" x="860" y="196" width="220" height="40"/>
       </g>
       <g class="comp" data-comp="nano">
-        <rect class="body" x="560" y="380" width="175" height="210"/>
-        <text class="clabel" x="574" y="408">ARDUINO</text><text class="csub" x="574" y="424">NANO V3</text>
-        <circle class="dot" cx="590" cy="380" r="4"/><text class="pin" x="578" y="372">5V</text>
-        <circle class="dot" cx="620" cy="380" r="4"/><text class="pin" x="608" y="372">GND</text>
-        <circle class="dot" cx="735" cy="415" r="4"/><text class="pin" x="700" y="411">A4</text>
-        <circle class="dot" cx="735" cy="435" r="4"/><text class="pin" x="700" y="431">A5</text>
-        <circle class="dot" cx="735" cy="465" r="4"/><text class="pin" x="700" y="461">D2</text>
-        <circle class="dot" cx="735" cy="485" r="4"/><text class="pin" x="700" y="481">D3</text>
-        <circle class="dot" cx="735" cy="515" r="4"/><text class="pin" x="700" y="511">D4</text>
-        <circle class="dot" cx="735" cy="548" r="4"/><text class="pin" x="672" y="544">D6-13</text>
-        <circle class="dot" cx="735" cy="572" r="4"/><text class="pin" x="700" y="568">A0</text>
-        <rect class="hit" x="560" y="380" width="175" height="210"/>
+        <rect class="body" x="604" y="430" width="256" height="96"/>
+        <text class="sn" x="618" y="443" text-anchor="middle">VIN</text>
+        <circle class="dot" cx="636" cy="430" r="4"/><text class="pin" x="636" y="443" text-anchor="middle">GND</text>
+        <text class="sn" x="664" y="443" text-anchor="middle">RST</text>
+        <circle class="dot" cx="692" cy="430" r="4"/><text class="pin" x="692" y="443" text-anchor="middle">5V</text>
+        <circle class="dot" cx="736" cy="430" r="4"/><text class="pin" x="736" y="443" text-anchor="middle">A5</text>
+        <circle class="dot" cx="764" cy="430" r="4"/><text class="pin" x="764" y="443" text-anchor="middle">A4</text>
+        <circle class="dot" cx="820" cy="430" r="4"/><text class="pin" x="820" y="443" text-anchor="middle">A0</text>
+        <text class="sn" x="614" y="455">ROWS NOT LINED UP, NOT TO SCALE</text>
+        <text class="sn" x="850" y="456" text-anchor="end">&#8593; BOTTOM ROW</text>
+        <text class="clabel" x="622" y="470">Arduino Nano V3</text>
+        <text class="csub" x="622" y="484">ON A SCREW-TERMINAL SHIELD</text>
+        <text class="csub" x="622" y="497">VIN EMPTY, D13 = ONBOARD LED</text>
+        <rect class="usb" x="846" y="466" width="14" height="22"/><text class="sn" x="842" y="481" text-anchor="end">USB</text>
+        <text class="sn" x="614" y="508">GO BY THE PRINTED LABELS</text>
+        <text class="sn" x="850" y="508" text-anchor="end">&#8595; TOP ROW</text>
+        <text class="sn" x="618" y="519" text-anchor="middle">RST</text>
+        <circle class="dot" cx="636" cy="526" r="4"/><text class="pin" x="636" y="519" text-anchor="middle">GND</text>
+        <circle class="dot" cx="664" cy="526" r="4"/><text class="pin" x="664" y="519" text-anchor="middle">D2</text>
+        <circle class="dot" cx="692" cy="526" r="4"/><text class="pin" x="692" y="519" text-anchor="middle">D3</text>
+        <circle class="dot" cx="720" cy="526" r="4"/><text class="pin" x="720" y="519" text-anchor="middle">D4</text>
+        <text class="sn" x="748" y="519" text-anchor="middle">D5</text>
+        <circle class="dot" cx="776" cy="526" r="4"/><text class="pin" x="776" y="519" text-anchor="middle">D6</text>
+        <circle class="dot" cx="804" cy="526" r="4"/><text class="pin" x="804" y="519" text-anchor="middle">D7</text>
+        <rect class="hit" x="604" y="430" width="256" height="96"/>
       </g>
-      <g class="comp" data-comp="kp">
-        <rect class="body" x="840" y="95" width="160" height="70"/>
-        <text class="clabel" x="854" y="123">4x4</text><text class="csub" x="854" y="140">KEYPAD</text>
-        <circle class="dot" cx="840" cy="130" r="4"/><text class="pin" x="796" y="126">P1-8</text>
-        <rect class="hit" x="840" y="95" width="160" height="70"/>
+      <g class="comp" data-comp="a0_strap">
+        <rect class="body" x="646" y="402" width="42" height="11"/>
+        <text class="sn" x="648" y="411">A0 STRAP</text>
+        <rect class="hit" x="642" y="398" width="48" height="26"/>
+      </g>
+      <g class="comp" data-comp="i2c_tees">
+        <text class="sn" x="870" y="302">SCL TEE</text>
+        <rect class="body" x="870" y="306" width="40" height="40"/>
+        <text class="sn" x="877" y="331">1</text><text class="sn" x="903" y="321" text-anchor="end">2</text><text class="sn" x="903" y="339" text-anchor="end">3</text>
+        <circle class="dot" cx="870" cy="328" r="3.5"/><circle class="dot" cx="910" cy="318" r="3.5"/><circle class="dot" cx="910" cy="336" r="3.5"/>
+        <rect class="hit" x="870" y="294" width="40" height="52"/>
+        <text class="sn" x="870" y="376">SDA TEE</text>
+        <rect class="body" x="870" y="380" width="40" height="40"/>
+        <text class="sn" x="877" y="403">1</text><text class="sn" x="903" y="393" text-anchor="end">2</text><text class="sn" x="903" y="411" text-anchor="end">3</text>
+        <circle class="dot" cx="870" cy="400" r="3.5"/><circle class="dot" cx="910" cy="390" r="3.5"/><circle class="dot" cx="910" cy="408" r="3.5"/>
+        <rect class="hit" x="870" y="368" width="40" height="52"/>
       </g>
       <g class="comp" data-comp="oled">
-        <rect class="body" x="840" y="388" width="160" height="86"/>
-        <text class="clabel" x="854" y="416">OLED</text><text class="csub" x="854" y="433">SSD1306 0x3C</text>
-        <circle class="dot" cx="840" cy="410" r="4"/><text class="pin" x="804" y="406">VCC</text>
-        <circle class="dot" cx="840" cy="430" r="4"/><text class="pin" x="804" y="426">GND</text>
-        <circle class="dot" cx="840" cy="452" r="4"/><text class="pin" x="802" y="448">SDA</text>
-        <circle class="dot" cx="840" cy="472" r="4"/><text class="pin" x="804" y="468">SCL</text>
-        <rect class="hit" x="840" y="388" width="160" height="86"/>
+        <rect class="body" x="960" y="290" width="74" height="90"/>
+        <circle class="dot" cx="980" cy="290" r="4"/><text class="pin" x="980" y="302" text-anchor="middle">VDD</text>
+        <circle class="dot" cx="1012" cy="290" r="4"/><text class="pin" x="1012" y="302" text-anchor="middle">GND</text>
+        <circle class="dot" cx="960" cy="318" r="4"/><text class="pin" x="966" y="321">SCL</text>
+        <circle class="dot" cx="960" cy="350" r="4"/><text class="pin" x="966" y="353">SDA</text>
+        <text class="clabel" x="990" y="322">OLED</text>
+        <text class="csub" x="990" y="336">2.42 in</text>
+        <text class="csub" x="990" y="349">SSD1309</text>
+        <text class="csub" x="990" y="362">0x3C</text>
+        <text class="csub" x="966" y="374">3-5 V</text>
+        <text class="tag" x="960" y="391">CHECK BEFORE</text>
+        <text class="tag" x="960" y="401">WIRING: OLED</text>
+        <text class="tag" x="960" y="411">PAD D2, NOT</text>
+        <text class="tag" x="960" y="421">NANO D2</text>
+        <rect class="hit" x="960" y="290" width="76" height="132"/>
       </g>
-      <g class="comp" data-comp="sw">
-        <rect class="body" x="840" y="510" width="160" height="86"/>
-        <text class="clabel" x="854" y="538">MICRO</text><text class="csub" x="854" y="555">SWITCH IP67</text>
-        <text class="csub" x="854" y="582" fill="var(--muted)">NO = capped</text>
-        <circle class="dot" cx="840" cy="545" r="4"/><text class="pin" x="804" y="541">COM</text>
-        <circle class="dot" cx="840" cy="570" r="4"/><text class="pin" x="812" y="566">NC</text>
-        <rect class="hit" x="840" y="510" width="160" height="86"/>
+      <g class="comp" data-comp="rtc">
+        <rect class="body" x="960" y="424" width="134" height="96"/>
+        <circle class="dot" cx="1044" cy="424" r="4"/><text class="pin" x="1044" y="436" text-anchor="middle">VCC</text>
+        <circle class="dot" cx="1072" cy="424" r="4"/><text class="pin" x="1072" y="436" text-anchor="middle">GND</text>
+        <circle class="dot" cx="960" cy="440" r="4"/><text class="pin" x="966" y="443">SCL</text>
+        <circle class="dot" cx="960" cy="460" r="4"/><text class="pin" x="966" y="463">SDA</text>
+        <text class="clabel" x="990" y="449">DS3231 clock</text>
+        <text class="csub" x="990" y="463">I2C 0x68</text>
+        <text class="csub" x="966" y="480">LIR2032 CELL, + SIDE UP</text>
+        <text class="tag" x="966" y="494">SNIP THE POWER LED</text>
+        <text class="csub" x="966" y="508">NOT A CR2032</text>
+        <rect class="hit" x="960" y="424" width="134" height="96"/>
+      </g>
+      <g class="comp" data-comp="r10k">
+        <rect class="body" x="770" y="536" width="12" height="24"/><text class="sn" x="765" y="551" text-anchor="end">10k&#937;</text>
+        <rect class="body" x="798" y="536" width="12" height="24"/><text class="sn" x="815" y="551">10k&#937;</text>
+        <text class="sn" x="820" y="576">10 k&#937; + 2-SLOT SPLICE,</text>
+        <text class="sn" x="820" y="586">AT THE NANO END</text>
+        <rect class="hit" x="744" y="532" width="96" height="31"/>
+        <rect class="hit" x="818" y="566" width="114" height="24"/>
+      </g>
+      <g class="comp" data-comp="keypad">
+        <rect class="body" x="940" y="600" width="154" height="90"/>
+        <circle class="dot" cx="940" cy="630" r="4"/><text class="pin" x="946" y="633">WHT D1</text>
+        <circle class="dot" cx="940" cy="652" r="4"/><text class="pin" x="946" y="655">GRN D0</text>
+        <circle class="dot" cx="984" cy="690" r="4"/><text class="sn" x="984" y="683" text-anchor="middle">RED</text>
+        <circle class="dot" cx="1024" cy="690" r="4"/><text class="sn" x="1024" y="683" text-anchor="middle">BLK</text>
+        <text class="clabel" x="952" y="618">Retekess T-AC03</text>
+        <text class="tag" x="990" y="636">12 V PART</text>
+        <text class="csub" x="990" y="647">WIEGAND</text>
+        <text class="csub" x="990" y="658">OTHER LEADS</text>
+        <text class="csub" x="990" y="669">CAPPED ONE BY ONE</text>
+        <rect class="hit" x="940" y="600" width="154" height="90"/>
+      </g>
+      <g class="comp" data-comp="door_switch">
+        <rect class="body" x="580" y="800" width="220" height="70"/>
+        <circle class="dot" cx="600" cy="800" r="4"/><text class="sn" x="600" y="813" text-anchor="middle">NC</text>
+        <circle class="dot" cx="624" cy="800" r="4"/><text class="sn" x="624" y="813" text-anchor="middle">COM</text>
+        <circle class="dot" cx="648" cy="800" r="4"/><text class="sn" x="648" y="813" text-anchor="middle">NO</text>
+        <text class="sn" x="658" y="716">NO CAPPED</text>
+        <text class="clabel" x="672" y="815">Latch-door switch</text>
+        <text class="csub" x="592" y="832">WS1 ROLLER MICROSWITCH (SOLD AS IP67)</text>
+        <text class="csub" x="592" y="845">READS THE LATCH'S OWN DOOR,</text>
+        <text class="csub" x="592" y="858">NOT THE BIN'S LID</text>
+        <rect class="hit" x="580" y="800" width="220" height="70"/>
+        <rect class="hit" x="640" y="708" width="64" height="13"/>
+      </g>
+      <g class="comp nw" data-comp="manual_release">
+        <rect class="body" x="840" y="796" width="250" height="74"/>
+        <text class="clabel" x="852" y="818">Manual release</text>
+        <text class="tag" x="852" y="833">NOT WIRED</text>
+        <text class="csub" x="852" y="848">UNLOCKS THE LATCH WITH NO POWER</text>
+        <text class="csub" x="852" y="861">AND NO CODE</text>
+        <rect class="hit" x="840" y="796" width="250" height="74"/>
       </g>
     </svg>
   </div>
 
-  <aside class="panel">
+  <aside class="panel" aria-label="Wire card and build checklist">
     <div class="phead">
-      <div class="eyebrow">Wiring checklist</div>
+      <div class="eyebrow">Build checklist</div>
       <h2 id="pTitle">All connections</h2>
       <div class="pbar"><div class="pfill" id="pfill"></div></div>
-      <div class="pnum" id="pnum">0 / 0 wired</div>
+      <div class="pnum" id="pnum">0 / 0 steps done</div>
     </div>
-    <div class="clist" id="clist">
-      <div class="grp">12V power (fused)</div>
-      <label class="ck-row" data-wire="w-bat-fuse"><input type="checkbox" data-w="w-bat-fuse"><span class="box"></span><span class="dot2" style="background:var(--v12)"></span><span class="txt"><b>Battery +</b> → 5A Fuse</span></label>
-      <label class="ck-row" data-wire="w-fuse-wpos"><input type="checkbox" data-w="w-fuse-wpos"><span class="box"></span><span class="dot2" style="background:var(--v12)"></span><span class="txt"><b>5A Fuse</b> → WAGO (12V+)</span></label>
-      <label class="ck-row" data-wire="w-wpos-buck"><input type="checkbox" data-w="w-wpos-buck"><span class="box"></span><span class="dot2" style="background:var(--v12)"></span><span class="txt"><b>WAGO (12V+)</b> → Buck IN+</span></label>
-      <label class="ck-row" data-wire="w-wpos-relay"><input type="checkbox" data-w="w-wpos-relay"><span class="box"></span><span class="dot2" style="background:var(--v12)"></span><span class="txt"><b>WAGO (12V+)</b> → Relay NO (×2)</span></label>
-
-      <div class="grp">Ground (WAGO)</div>
-      <label class="ck-row" data-wire="w-bat-wgnd"><input type="checkbox" data-w="w-bat-wgnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>Battery −</b> → WAGO (GND)</span></label>
-      <label class="ck-row" data-wire="w-wgnd-buck"><input type="checkbox" data-w="w-wgnd-buck"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>WAGO (GND)</b> → Buck IN−</span></label>
-      <label class="ck-row" data-wire="w-wgnd-relay"><input type="checkbox" data-w="w-wgnd-relay"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>WAGO (GND)</b> → Relay NC (×2)</span></label>
-
-      <div class="grp">5V rail (logic power)</div>
-      <label class="ck-row" data-wire="w-buck-5v"><input type="checkbox" data-w="w-buck-5v"><span class="box"></span><span class="dot2" style="background:var(--v5)"></span><span class="txt"><b>Buck OUT+</b> → 5V rail</span></label>
-      <label class="ck-row" data-wire="w-nano-5v"><input type="checkbox" data-w="w-nano-5v"><span class="box"></span><span class="dot2" style="background:var(--v5)"></span><span class="txt"><b>Nano 5V</b> → 5V rail</span></label>
-      <label class="ck-row" data-wire="w-oled-5v"><input type="checkbox" data-w="w-oled-5v"><span class="box"></span><span class="dot2" style="background:var(--v5)"></span><span class="txt"><b>OLED VCC</b> → 5V rail</span></label>
-      <label class="ck-row" data-wire="w-relay-5v"><input type="checkbox" data-w="w-relay-5v"><span class="box"></span><span class="dot2" style="background:var(--v5)"></span><span class="txt"><b>Relay VCC</b> → 5V rail</span></label>
-
-      <div class="grp">GND rail (logic ground)</div>
-      <label class="ck-row" data-wire="w-buck-gnd"><input type="checkbox" data-w="w-buck-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>Buck OUT−</b> → GND rail</span></label>
-      <label class="ck-row" data-wire="w-nano-gnd"><input type="checkbox" data-w="w-nano-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>Nano GND</b> → GND rail</span></label>
-      <label class="ck-row" data-wire="w-oled-gnd"><input type="checkbox" data-w="w-oled-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>OLED GND</b> → GND rail</span></label>
-      <label class="ck-row" data-wire="w-relay-gnd"><input type="checkbox" data-w="w-relay-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>Relay GND</b> → GND rail</span></label>
-      <label class="ck-row" data-wire="w-sw-gnd"><input type="checkbox" data-w="w-sw-gnd"><span class="box"></span><span class="dot2" style="background:var(--gnd)"></span><span class="txt"><b>Micro switch NC</b> → GND rail</span></label>
-
-      <div class="grp">Signals</div>
-      <label class="ck-row" data-wire="w-a4"><input type="checkbox" data-w="w-a4"><span class="box"></span><span class="dot2" style="background:var(--i2c)"></span><span class="txt"><b>Nano A4</b> → OLED SDA</span></label>
-      <label class="ck-row" data-wire="w-a5"><input type="checkbox" data-w="w-a5"><span class="box"></span><span class="dot2" style="background:var(--i2c)"></span><span class="txt"><b>Nano A5</b> → OLED SCL</span></label>
-      <label class="ck-row" data-wire="w-d2"><input type="checkbox" data-w="w-d2"><span class="box"></span><span class="dot2" style="background:var(--rc)"></span><span class="txt"><b>Nano D2</b> → Relay IN1 (extend)</span></label>
-      <label class="ck-row" data-wire="w-d3"><input type="checkbox" data-w="w-d3"><span class="box"></span><span class="dot2" style="background:var(--rc)"></span><span class="txt"><b>Nano D3</b> → Relay IN2 (retract)</span></label>
-      <label class="ck-row" data-wire="w-d4"><input type="checkbox" data-w="w-d4"><span class="box"></span><span class="dot2" style="background:var(--lid)"></span><span class="txt"><b>Nano D4</b> → Micro switch COM</span></label>
-      <label class="ck-row" data-wire="w-kp"><input type="checkbox" data-w="w-kp"><span class="box"></span><span class="dot2" style="background:var(--kpad)"></span><span class="txt"><b>Nano D6–D13</b> → Keypad (8 wires)</span></label>
-
-      <div class="grp">Actuator (12V switched)</div>
-      <label class="ck-row" data-wire="w-coma"><input type="checkbox" data-w="w-coma"><span class="box"></span><span class="dot2" style="background:var(--act)"></span><span class="txt"><b>Relay COM 1</b> → Actuator lead A</span></label>
-      <label class="ck-row" data-wire="w-comb"><input type="checkbox" data-w="w-comb"><span class="box"></span><span class="dot2" style="background:var(--act)"></span><span class="txt"><b>Relay COM 2</b> → Actuator lead B</span></label>
-
-      <div class="grp">Optional — battery sense</div>
-      <label class="ck-row" data-wire="w-bs"><input type="checkbox" data-w="w-bs"><span class="box"></span><span class="dot2" style="background:var(--bs)"></span><span class="txt"><b>Batt+</b> →100k→ <b>A0</b> →33k→ GND</span></label>
-    </div>
+    <div class="ccard" id="ccard" hidden></div>
+    <div class="clist" id="clist"></div>
   </aside>
 </div>
 
+<section class="notes">
+  <h2>Build and safety notes</h2>
+  <div class="ngrid">
+    <div class="note"><h3>Power</h3><p>A small solar panel, a charge controller and a 12&nbsp;V LiFePO4 battery. On the latch side, the 5&nbsp;A main fuse is the first thing on battery +. The charge controller's two battery leads also connect at the battery: BAT+ through its own fuse, and BAT&minus;. Pulling the main fuse powers down the latch electronics (everything on the 12V+ hub): pull it before changing any latch wire, and keep 2-3 spare 5&nbsp;A fuses in the box. The battery + run to the fuse holder (A1) also stays live with the fuse out; to work on A1 or A3, pull the battery spades first (they go back on with the fuse out, + first, then &minus;). The main fuse does not isolate the charge controller: the controller's leads stay live on the battery, and the panel is live in daylight. To work on the solar wiring, take the panel off the controller first and the battery leads last.</p></div>
+    <div class="note"><h3>Charge controller setting</h3><p>Set the Wanderer's battery type to LITHIUM (LI) &mdash; before the panel is connected. Choose 12&nbsp;V. The controller then asks for a charge voltage. <b>Check before saving:</b> the value is not settled on this page. Hold ENTER about 3&nbsp;s to save, then open the setting again and check that it shows LI. The controller's lead-acid profiles are wrong for this LiFePO4 battery.</p></div>
+    <div class="note"><h3>Charge controller order</h3><p>Battery onto the controller's BAT terminals first, panel onto PV second. Disconnect in reverse: panel first, battery last. Re-check the battery-type setting whenever the battery has been off the controller.</p></div>
+    <div class="note"><h3>LOAD terminals</h3><p>The latch is powered from the battery through its own 5&nbsp;A fuse. The charge controller's LOAD terminals are not used, so the controller does not cut the latch off at low battery.</p></div>
+    <div class="note"><h3>Solar panel</h3><p>Use a 12&nbsp;V panel (about 18-21&nbsp;V open circuit), never a 6&nbsp;V panel. The current build uses a 5&nbsp;W panel.</p></div>
+    <div class="note"><h3>Polarity first</h3><p>Before the buck sees anything, put the fuse in and meter the 12V+ hub against the GND hub; it must read positive. The LM2596 has no reverse-polarity protection.</p></div>
+    <div class="note"><h3>Buck and Nano power</h3><p>Set the buck to 5.00&nbsp;V with nothing on its output before the Nano is ever connected. Feed the Nano's 5V screw, never VIN: 5&nbsp;V into VIN runs the chip at about 4&nbsp;V, out of spec. 12&nbsp;V never touches the Nano shield.</p></div>
+    <div class="note"><h3>Nano seating</h3><p>Seat the Nano with its USB jack at the shield end marked with the USB outline. A Nano seated 180 degrees out dies at the first power-up. In the drawing the USB end is on the right (marked USB). The two rows are not lined up in the drawing, and the spacing is not to scale: on the shield the top-row GND faces the bottom-row 5V, so find each screw by its printed label.</p></div>
+    <div class="note"><h3>Lever connectors</h3><p>One wire per lever-connector slot, never two. A screw terminal may take two wires (the relay jumpers and the bottom-row GND screw do). Strip about 11&nbsp;mm, twist the strands snug with no stray whiskers, put all copper inside the jaw, press the lever flat and tug-test. Never push a bare single 26-28&nbsp;AWG jumper wire straight into a lever connector.</p></div>
+    <div class="note"><h3>Wire gauges</h3><p>18&nbsp;AWG red/black for the 12&nbsp;V current runs (battery, fuse, hubs to buck input, relay NO/NC feeds and jumpers). 22&nbsp;AWG for logic and the A0 strap. 24&nbsp;AWG pre-crimped female jumpers onto the header pins of the screen, clock and relay DC+/DC&#8722;/IN1/IN2.</p></div>
+    <div class="note"><h3>Relays</h3><p>Set both trigger jumpers (S1, S2) to LOW. A jumper on High holds that channel on at idle; a lit channel LED at idle is the tell. The relays are driven inverted on purpose: on a lock stroke relay 2 (IN2) pulls in and the black actuator lead rises to 12&nbsp;V; on an unlock stroke relay 1 pulls in. Which relay clicks is not a fault; the only direction test is "unlock must retract".</p></div>
+    <div class="note"><h3>Actuator safety</h3><p>Keep hands clear of the rod whenever the fuse is in. Setup ends with a lock stroke, so set the unit up before the actuator leads (M5, M6) are landed. Once the box is set up, every power-up runs one 2.5&nbsp;s lock stroke, and after an unlock the box can also run a lock stroke without a key press (for example when the latch door shuts; see the bench test note). Pull the fuse before swapping actuator leads.</p></div>
+    <div class="note"><h3>USB safety</h3><p>Take the 12&nbsp;V off (pull the fuse) before plugging a USB cable into the Nano or unplugging the board. With the board unplugged, D2/D3 float and a low-trigger relay can switch on by itself.</p></div>
+    <div class="note"><h3>Keypad</h3><p>Only red, black, green and white are used; cap every other lead separately. The keypad's own back label outranks any colour table, and 10-lead units lack grey and brown. Arrival checks: red-to-black must not be a dead short, and green and white must idle between 3.0 and 5.5&nbsp;V before they go near the Nano.</p></div>
+    <div class="note"><h3>Screen</h3><p>Use a 2.42&nbsp;in board marked 3-5&nbsp;V. Leave a service loop of at least 150&nbsp;mm because the screen is in the control-box lid, and tug-test after closing it. A blank screen is usually just the screen timeout; the first key press only wakes it. If a key press does not wake it, check the battery. <b>Check before wiring:</b> some 2.42&nbsp;in boards only answer on I2C after the pad marked D2 on the screen board itself (not the Nano's D2) is solder-bridged.</p></div>
+    <div class="note"><h3>Latch-door switch</h3><p>The switch reads the latch's own door, not the bin's lid. Nothing on the box senses the bin's lid, and the latch does not report lid openings. The screen's messages call this switch the lid (for example LID CLOSED); they mean the latch's own door.</p></div>
+    <div class="note"><h3>A0 strap</h3><p>The A0-to-GND strap is required. This build has no battery gauge, so the box gives no low-battery warning.</p></div>
+    <div class="note"><h3>Manual release (not wired)</h3><p>A manual release on the box unlocks the latch with no power and no code.</p></div>
+    <div class="note bench"><h3>Bench test note</h3><p>On the bench, after an unlock, open and then shut the latch door. About 0.6&nbsp;s after the door presses the roller (D4 goes HIGH), the box drives a lock stroke. It does this only once the door has been seen open. With the roller released (latch door open), a relock from the keypad is refused. The screen calls this switch the lid (for example LID CLOSED); it means the latch's own door. This is a bench check, not a sales claim.</p></div>
+  </div>
+  <p class="foot">Current design. This page shows wiring only. Checklist ticks are saved in this browser only.</p>
+</section>
+
 <script>
 (function(){
-  const LS="oneLatchWiringV2";
-  const store = JSON.parse(localStorage.getItem(LS) || "{}");
-  const body=document.body, svg=document.querySelector('svg');
-  const wires=Array.from(svg.querySelectorAll('.wire'));
-  const comps=Array.from(svg.querySelectorAll('.comp'));
-  const legend=Array.from(document.querySelectorAll('.lg[data-net]'));
-  const rows=Array.from(document.querySelectorAll('.ck-row'));
-  const boxes=Array.from(document.querySelectorAll('.ck-row input'));
-  const pTitle=document.getElementById('pTitle');
-  let locked={t:'none'};
+  /* Wire cards: one per part in the drawing. Each row names a wire (id of an SVG path). */
+  var INFO={
+    battery:{t:"12 V LiFePO4 battery, 7 Ah",m:"GOLDENMATE 12 V 7 Ah LiFePO4 (12.8 V nominal, built-in BMS)",
+      d:"The box's only power source. Its + terminal goes to the 5 A main fuse first; its &minus; terminal goes to the GND hub. The solar charge controller also connects to both terminals. Crimp insulated spade terminals onto the leads; never solder on the battery tabs.",
+      x:"<b>Check before wiring:</b> how the controller's battery leads land alongside the A1/A3 spades.",
+      w:[["w-A1","<b>+</b> : to 5 A main fuse (A1)"],["w-SOL1","<b>+</b> : to the charge controller's own inline fuse, then its BAT+ (Solar 1)"],["w-A3","<b>&minus;</b> : to GND hub slot 1 (A3)"],["w-SOL3","<b>&minus;</b> : to the charge controller's BAT&minus; (Solar 3)"]]},
+    fuse_main:{t:"5 A main fuse",m:"Inline blade fuse holder + 5 A blade fuse",
+      d:"The first thing on battery + on the latch side. Everything on the 12 V hub sits after it. Pulling it powers down everything on the 12 V hub, so pull it before changing any latch wire. The battery + run to the fuse holder (A1) also stays live with the fuse out; to work on A1 or A3, pull the battery spades first (they go back on with the fuse out, + first, then &minus;). The fuse does not isolate the charge controller: the controller's own fused lead stays live on the battery, and the panel is live in daylight. Keep 2-3 spare 5 A fuses in the box.",
+      w:[["w-A1","<b>in</b>: from battery + (A1)"],["w-A2","<b>out</b>: to 12V+ hub slot 1 (A2)"]]},
+    hub_12v:{t:"12V+ hub",m:"WAGO 221-415 5-slot lever connector, labelled 12V+",
+      d:"The fused 12 V junction. One wire per slot, never two. If a hub is full, daisy-chain a short same-colour jumper to a fresh lever connector.",
+      w:[["w-A2","<b>slot 1</b>: from 5 A fuse (A2)"],["w-A4","<b>slot 2</b>: to buck IN+ (A4)"],["w-M1","<b>slot 3</b>: to relay NO1 (M1)"],["w-C11","<b>slot 4</b>: to keypad RED (C11)"],["","<b>slot 5</b>: spare"]]},
+    hub_gnd:{t:"GND hub (battery side)",m:"WAGO 221-415 5-slot lever connector, labelled GND",
+      d:"Battery-side ground. It is the same electrical net as the logic ground (LGND), joined inside the buck. Keep the two hubs separate as drawn.",
+      w:[["w-A3","<b>slot 1</b>: from battery &minus; (A3)"],["w-A5","<b>slot 2</b>: to buck IN&minus; (A5)"],["w-M3","<b>slot 3</b>: to relay NC1 (M3)"],["w-C12","<b>slot 4</b>: to keypad BLACK (C12)"],["","<b>slot 5</b>: spare"]]},
+    hub_5v:{t:"5V hub",m:"WAGO 221-415 5-slot lever connector, labelled 5V",
+      d:"The 5 V logic supply from the buck. It feeds the Nano, relay coils, screen and clock.",
+      w:[["w-B1","<b>slot 1</b>: from buck OUT+ (B1)"],["w-B3","<b>slot 2</b>: to Nano 5V screw (B3)"],["w-B5","<b>slot 3</b>: to relay DC+ (B5)"],["w-B7","<b>slot 4</b>: to OLED VDD (B7)"],["w-B9","<b>slot 5</b>: to clock VCC (B9)"]]},
+    hub_lgnd:{t:"LGND hub (logic ground)",m:"WAGO 221-415 5-slot lever connector, labelled LGND",
+      d:"Logic ground for the Nano, relay coils, screen and clock. It is the same net as the GND hub, joined inside the buck.",
+      w:[["w-B2","<b>slot 1</b>: from buck OUT&minus; (B2)"],["w-B4","<b>slot 2</b>: to Nano shield bottom-row GND screw (B4)"],["w-B6","<b>slot 3</b>: to relay DC&minus; (B6)"],["w-B8","<b>slot 4</b>: to OLED GND (B8)"],["w-B10","<b>slot 5</b>: to clock GND (B10)"]]},
+    buck:{t:"Buck converter, 12 V to 5 V",m:"LM2596 adjustable buck module, screw-terminal version",
+      d:"Turns fused 12 V into the 5 V logic supply. Set it to 5.00 V (4.95-5.05 V is fine) with nothing on its output, before the Nano is ever connected. It has no reverse-polarity protection, so check battery polarity at the hubs first.",
+      w:[["w-A4","<b>IN+</b>: from 12V+ hub slot 2 (A4)"],["w-A5","<b>IN&minus;</b>: from GND hub slot 2 (A5)"],["w-B1","<b>OUT+</b>: to 5V hub slot 1 (B1)"],["w-B2","<b>OUT&minus;</b>: to LGND hub slot 1 (B2)"]]},
+    nano:{t:"Controller: Arduino Nano on a screw-terminal shield",m:"Arduino Nano V3 (ATmega328P) on a green Nano screw-terminal expansion shield",
+      d:"The controller. It reads the keypad and the latch-door switch, drives the two relays, and runs the screen and clock. It takes 5 V on its 5V screw and VIN stays empty. 12 V must never touch the shield. Bottom-row GND is the screw labelled GND two past 5V (RST sits beside 5V, so never land ground on RST). Top-row GND sits between RST and D2. In the drawing the USB end is on the right (marked USB), the bottom-row screws are along the top edge and the top-row screws are along the bottom edge. The two rows are not lined up in the drawing, and the spacing is not to scale: on the shield the top-row GND faces the bottom-row 5V, so find each screw by its printed label.",
+      w:[["w-B3","<b>5V</b>: from 5V hub slot 2 (B3). VIN stays empty"],["w-B4","<b>GND, bottom row</b>: from LGND hub slot 2 (B4); the A0 strap (E1) goes in the same screw"],["w-C10","<b>GND, top row</b>: latch-door switch NC (C10)"],
+         ["w-C1","<b>A4 (SDA)</b>: to SDA tee slot 1 (C1)"],["w-C4","<b>A5 (SCL)</b>: to SCL tee slot 1 (C4)"],["w-C7","<b>D2</b>: to relay IN1 (C7)"],["w-C8","<b>D3</b>: to relay IN2 (C8)"],
+         ["w-C9","<b>D4</b>: from latch-door switch COM (C9)"],["w-C13","<b>D6</b>: from keypad GREEN (Wiegand D0) through 10 k&Omega; (C13)"],["w-C14","<b>D7</b>: from keypad WHITE (Wiegand D1) through 10 k&Omega; (C14)"],
+         ["w-E1","<b>A0</b>: strapped to bottom-row GND (E1)"],["","<b>D13</b>: onboard LED only, nothing connected"],["","<b>Not used</b>: D0, D1, D5, D8-D12, A1-A3, A6, A7, 3V3, REF, VIN"]]},
+    relay:{t:"2-channel relay module",m:"2-channel 5 V relay module, LOW-level trigger, S1/S2 trigger jumpers (CW-026 class)",
+      d:"Two relays that reverse the actuator's polarity. The coils run from the 5 V hub and the inputs come from Nano D2 and D3. Set both trigger jumpers (S1, S2) to LOW. At idle only the power LED should be lit. Each relay needs all three screws wired: NO to 12 V, COM to the actuator, NC to ground. With this wiring, both relays on puts 12 V on both actuator leads (0 V across the motor), so no contact combination shorts the battery. On the CW-026 board the screw order is NO2 COM2 NC2 NO1 COM1 NC1 (relay 2's block first). Land every wire by the printed screw label, not by its position in this drawing.",
+      w:[["w-B5","<b>DC+</b>: from 5V hub slot 3 (B5)"],["w-B6","<b>DC&minus;</b>: from LGND hub slot 3 (B6)"],["w-C7","<b>IN1</b>: from Nano D2 (C7)"],["w-C8","<b>IN2</b>: from Nano D3 (C8)"],
+         ["w-M1","<b>NO1</b>: from 12V+ hub slot 3 (M1)"],["w-M2","<b>NO1 to NO2</b>: short jumper (M2)"],["w-M3","<b>NC1</b>: from GND hub slot 3 (M3)"],["w-M4","<b>NC1 to NC2</b>: short jumper (M4)"],
+         ["w-M5","<b>COM1</b>: to actuator RED (M5)"],["w-M6","<b>COM2</b>: to actuator BLACK (M6)"]]},
+    actuator:{t:"12 V linear actuator (the latch bolt)",m:"GoMotorWorld LA-T8, 12 V, 21 mm stroke, 2 leads (red, black)",
+      d:"Moves the latch bolt. The two relays reverse its polarity. At rest both leads sit at ground. In normal running, 12 V appears across them only during a stroke of about 2.5 s (see the USB safety note for the exception). It never connects to a hub. If a lead must be extended, use an inline 2-slot splice. Unlocking must pull the rod IN; if it pushes out, pull the fuse and swap the two leads at the relay COM screws.",
+      w:[["w-M5","<b>RED lead</b>: to relay COM1 (M5)"],["w-M6","<b>BLACK lead</b>: to relay COM2 (M6)"]]},
+    keypad:{t:"Keypad (Wiegand)",m:"Retekess T-AC03, 12 V, 4-wire Wiegand output (10- or 12-lead cable)",
+      d:"Where the code is typed. Only four leads are used: red (+12 V), black (ground), green (data D0) and white (data D1). Cap every other lead separately. The keypad's own back label outranks any colour table.",
+      w:[["w-C11","<b>RED (+12 V)</b>: to 12V+ hub slot 4 (C11)"],["w-C12","<b>BLACK (ground)</b>: to GND hub slot 4 (C12). A ground common with the Nano is required"],["w-C13","<b>GREEN (Wiegand D0)</b>: 2-slot splice, 10 k&Omega;, Nano D6 (C13)"],["w-C14","<b>WHITE (Wiegand D1)</b>: 2-slot splice, 10 k&Omega;, Nano D7 (C14)"],
+         ["","<b>Capped one by one</b>: PINK x2, YELLOW, BLUE, PURPLE, ORANGE; 12-lead units also GREY and BROWN"]]},
+    r10k:{t:"2 x 10 k&Omega; series resistors",m:"10 k&Omega; resistor x2",
+      d:"One in each keypad data line: green to D6 and white to D7. Required on this build. No solder: put the keypad wire in slot 1 of a 2-slot lever splice and one resistor leg in slot 2. The other leg goes into the Nano screw. Keep the resistor body within about 20 mm of the splice.",
+      w:[["w-C13","<b>GREEN side</b>: splice; <b>D6 side</b>: Nano D6 screw (C13)"],["w-C14","<b>WHITE side</b>: splice; <b>D7 side</b>: Nano D7 screw (C14)"]]},
+    door_switch:{t:"Latch-door switch",m:"WS1-type roller microswitch, 3 leads (sold as a Joinfworld IP67 roller limit switch)",
+      d:"Reads the latch's own door, not the bin's lid. Nothing on the box senses the bin's lid, and the latch does not report lid openings. The screen's messages call this switch the lid (for example LID CLOSED); they mean the latch's own door. With the roller pressed (latch door shut), Nano D4 reads HIGH. Lead colours vary by batch: the pair that beeps with the roller NOT pressed is COM + NC. With NO capped, either lead of that pair may go to Nano D4 and the other to the top-row GND screw; they are interchangeable in this circuit.",
+      w:[["w-C9","<b>COM</b> (black on the verified batch): to Nano D4 (C9)"],["w-C10","<b>NC</b> (grey): to Nano shield top-row GND screw (C10)"],["w-NO","<b>NO</b> (blue): capped inside the box right after the gland, never extended (Cap)"]]},
+    oled:{t:"Screen (OLED, 2.42 in)",m:"DIYables 2.42 in SSD1309 128x64 I2C OLED, address 0x3C (a 0x3D board also works), marked 3-5 V, 4 pins GND/VDD/SCL/SDA",
+      d:"The screen, mounted in the control-box lid. It has four wires: VDD to the 5V hub, GND to logic ground, and SDA and SCL through the I2C tees. Match pins by the board's printed labels. Use a board marked 3-5 V; a 3.3 V-only board will not survive the 5 V hub. Leave a service loop of at least 150 mm and tug-test after closing the control-box lid.",
+      x:"<b>Check before wiring:</b> some 2.42 in boards only answer on I2C after the pad marked D2 on the screen board itself (not the Nano's D2) is solder-bridged.",
+      w:[["w-B7","<b>VDD (VCC)</b>: from 5V hub slot 4 (B7)"],["w-B8","<b>GND</b>: from LGND hub slot 4 (B8)"],["w-C2","<b>SDA</b>: from SDA tee slot 2 (C2)"],["w-C5","<b>SCL</b>: from SCL tee slot 2 (C5)"]]},
+    rtc:{t:"Clock module",m:"DS3231 RTC module (ZS-042 class), I2C address 0x68, LIR2032 rechargeable coin cell",
+      d:"Its coin cell is there to keep the date and time while the main battery is off. It uses the same two I2C wires as the screen. Use a LIR2032 rechargeable cell only, never a CR2032, because the board charges the cell. Fit the cell + side up. Snip the module's power LED before fitting it; the LED drains the battery while the box sleeps.",
+      w:[["w-B9","<b>VCC</b>: from 5V hub slot 5 (B9)"],["w-B10","<b>GND</b>: from LGND hub slot 5 (B10)"],["w-C3","<b>SDA</b>: from SDA tee slot 3 (C3)"],["w-C6","<b>SCL</b>: from SCL tee slot 3 (C6)"]]},
+    i2c_tees:{t:"I2C tees",m:"WAGO 221-413 3-slot lever connector x2 (plus 1 spare)",
+      d:"One tee for SDA and one for SCL, so each Nano pin holds a single wire. Never put two wires in the A4 or A5 screw.",
+      w:[["w-C1","<b>SDA tee slot 1</b>: Nano A4 (C1)"],["w-C2","<b>SDA tee slot 2</b>: OLED SDA (C2)"],["w-C3","<b>SDA tee slot 3</b>: clock SDA (C3)"],["w-C4","<b>SCL tee slot 1</b>: Nano A5 (C4)"],["w-C5","<b>SCL tee slot 2</b>: OLED SCL (C5)"],["w-C6","<b>SCL tee slot 3</b>: clock SCL (C6)"]]},
+    splices:{t:"Inline splices",m:"WAGO 221-412 2-slot lever connector x8",
+      d:"Two for actuator-lead extensions, two for the switch COM and NC extensions and two for the Wiegand resistors, plus two spare. Only the two Wiegand splices are drawn, beside their resistors at the Nano end; the extension splices are used only where a lead must be extended. The actuator never goes into a hub.",
+      w:[["w-C13","<b>GREEN splice</b>: keypad GREEN in slot 1, one resistor leg in slot 2 (C13)"],["w-C14","<b>WHITE splice</b>: keypad WHITE in slot 1, one resistor leg in slot 2 (C14)"]]},
+    a0_strap:{t:"A0-to-ground strap",m:"One 22 AWG jumper, about 50 mm",
+      d:"Required on this build. It ties Nano A0 to the shield's bottom-row GND screw, in the same screw as the Nano ground wire (a screw may hold two wires; a lever hub never does). An unconnected A0 can show a false low-battery message. This build has no battery gauge, so the box gives no low-battery warning.",
+      w:[["w-E1","<b>Nano A0 screw</b> to <b>shield bottom-row GND screw</b> (E1)"]]},
+    charge_controller:{t:"Solar charge controller",m:"Renogy Wanderer 10 A PWM (RNG-CTRL-WND10)",
+      d:"Charges the battery from the panel. Before the panel is connected, set its battery type to LITHIUM (LI) and 12 V; its other battery-type profiles are wrong for this LiFePO4 battery. Connect the battery to its BAT terminals first, then the panel to PV. To disconnect, take the panel off first and the battery last. Its LOAD terminals are not used: the latch is fed straight from the battery through the 5 A main fuse, so the controller does not cut the latch off at low battery.",
+      x:"<b>Check before saving:</b> the charge voltage the controller asks for after 12 V (the value is not settled on this page). Hold ENTER about 3 s to save, then open the setting again and check that it shows LI.",
+      w:[["w-SOL2","<b>BAT+</b>: from battery + through its own inline fuse (Solar 2; the fuse's battery side is Solar 1)"],["w-SOL3","<b>BAT&minus;</b>: from battery &minus; (Solar 3)"],["w-SOL4","<b>PV+</b>: from the solar panel +, in through the M12 gland (Solar 4)"],["w-SOL5","<b>PV&minus;</b>: from the solar panel &minus; (Solar 5)"],["","<b>LOAD+ / LOAD&minus;</b>: empty, not used"]]},
+    fuse_controller:{t:"Controller battery fuse",m:"Inline blade fuse holder + fuse on the controller's BAT+ lead (rating: check before wiring)",
+      d:"Protects the charge controller's battery lead. It sits between battery + and the controller's BAT+. Pulling it opens the controller's BAT+ lead only; BAT&minus; stays on the battery. Keep this fuse out while the controller's battery leads are wired, and fit it once both are landed.",
+      x:"<b>Check before wiring:</b> the fuse rating for this lead.",
+      w:[["w-SOL1","<b>in</b>: from battery + (Solar 1)"],["w-SOL2","<b>out</b>: to controller BAT+ (Solar 2)"]]},
+    solar_panel:{t:"Solar panel, 12 V 5 W",m:"Newpowa 5 W 12 V panel (230.1 x 215 x 18 mm)",
+      d:"Charges the battery through the controller. It must be a 12 V panel (about 18-21 V open circuit), never a 6 V panel. Its lead enters the battery holder through the M12 gland; the + lead is the tape-marked one.",
+      w:[["w-SOL4","<b>+ (tape-marked)</b>: to controller PV+ (Solar 4)"],["w-SOL5","<b>&minus;</b>: to controller PV&minus; (Solar 5)"]]},
+    glands:{t:"Cable glands",m:"PG13.5 cable gland (control box to latch housing) + M12 cable gland (panel lead into the battery holder)",
+      d:"Five leads go through the PG13.5 gland to the latch housing: the actuator's two and the switch's three. They pass as one bundle jacketed in two layers of adhesive-lined heat-shrink. Slide the gland parts and both sleeves on before terminating any lead. Shrink both layers into one jacket where the gland clamps, with the bushing in the middle of the jacket, then tighten the dome and tug-test. The panel lead enters through the M12 gland; tighten its gland nut for the seal.",
+      w:[["w-M5","<b>PG13.5</b>: actuator RED (M5)"],["w-M6","<b>PG13.5</b>: actuator BLACK (M6)"],["w-C9","<b>PG13.5</b>: switch COM (C9)"],["w-C10","<b>PG13.5</b>: switch NC (C10)"],["w-NO","<b>PG13.5</b>: switch NO, capped just inside the box (Cap)"],["w-SOL4","<b>M12</b>: panel + (Solar 4)"],["w-SOL5","<b>M12</b>: panel &minus; (Solar 5)"]]},
+    manual_release:{t:"Manual release (not wired)",m:"Mechanical, no wiring",
+      d:"Not wired. A manual release on the box unlocks the latch with no power and no code.",w:[]}
+  };
 
-  function clear(){ body.classList.remove('sel');
-    wires.forEach(w=>w.classList.remove('hot')); comps.forEach(c=>c.classList.remove('focus'));
-    legend.forEach(l=>l.classList.remove('on')); }
+  /* Build checklist, in build order. k = saved key, c = code, w = wire ids to trace, n = net colour (wire runs only),
+     p = part ids whose card also lists this step. */
+  var CK=[
+    {g:"Before you start"},
+    {k:"p1",c:"Prep",t:"Seat the Nano on its shield with the USB jack at the end marked with the USB outline, and check its pin labels against the shield's.",p:"nano"},
+    {k:"p2",c:"Prep",t:"Label the four 5-slot lever hubs 12V+, GND, 5V and LGND.",p:"hub_12v hub_gnd hub_5v hub_lgnd"},
+    {k:"p3",c:"Prep",t:"Snip the clock module's power LED; fit a LIR2032 cell (+ side up), never a CR2032.",p:"rtc"},
+    {k:"p4",c:"Prep",t:"Crimp insulated spade terminals onto the battery leads (never solder on battery tabs).",p:"battery"},
+    {k:"p5",c:"Prep",t:"Screen: check whether this 2.42 in board needs the pad marked D2 on the screen board itself (not the Nano's D2) solder-bridged before it answers on I2C.",p:"oled"},
+    {g:"A: battery, fuse and buck input"},
+    {k:"A1",c:"A1",t:"Battery + to 5 A fuse holder (18 AWG red)",w:"w-A1",n:"p12"},
+    {k:"A2",c:"A2",t:"Fuse holder to 12V+ hub slot 1 (18 AWG red)",w:"w-A2",n:"p12"},
+    {k:"A3",c:"A3",t:"Battery − to GND hub slot 1 (18 AWG black)",w:"w-A3",n:"gnd"},
+    {k:"cA",c:"Check",t:"Push the battery spades on with the fuse out (+ first, then −). Fuse in: 12V+ hub to GND hub must read +12.8 to +13.6 V with a positive sign. Fuse out.",w:"w-A1 w-A2 w-A3",p:"buck"},
+    {k:"A4",c:"A4",t:"12V+ hub slot 2 to buck IN+ (18 AWG red)",w:"w-A4",n:"p12"},
+    {k:"A5",c:"A5",t:"GND hub slot 2 to buck IN− (18 AWG black)",w:"w-A5",n:"gnd"},
+    {k:"sA",c:"Set",t:"Fuse in, nothing on the buck's output: turn the trim pot until OUT+ to OUT− reads 5.00 V (4.95-5.05 V). Mark the pot. Fuse out.",p:"buck"},
+    {g:"B: logic power"},
+    {k:"B1",c:"B1",t:"Buck OUT+ to 5V hub slot 1 (22 AWG)",w:"w-B1",n:"p5"},
+    {k:"B2",c:"B2",t:"Buck OUT− to LGND hub slot 1 (22 AWG)",w:"w-B2",n:"gnd"},
+    {k:"B3",c:"B3",t:"5V hub slot 2 to Nano shield 5V screw (VIN stays empty)",w:"w-B3",n:"p5"},
+    {k:"B4",c:"B4",t:"LGND hub slot 2 to Nano shield bottom-row GND screw (labelled GND, two past 5V; never RST)",w:"w-B4",n:"gnd"},
+    {k:"B5",c:"B5",t:"5V hub slot 3 to relay DC+ (24 AWG crimped jumper on the header pin)",w:"w-B5",n:"p5"},
+    {k:"B6",c:"B6",t:"LGND hub slot 3 to relay DC−",w:"w-B6",n:"gnd"},
+    {k:"B7",c:"B7",t:"5V hub slot 4 to OLED VDD (at least 150 mm service loop)",w:"w-B7",n:"p5"},
+    {k:"B8",c:"B8",t:"LGND hub slot 4 to OLED GND (same service loop)",w:"w-B8",n:"gnd"},
+    {k:"B9",c:"B9",t:"5V hub slot 5 to clock VCC",w:"w-B9",n:"p5"},
+    {k:"B10",c:"B10",t:"LGND hub slot 5 to clock GND",w:"w-B10",n:"gnd"},
+    {k:"cB",c:"Check",t:"Fuse out. GND hub to LGND hub must beep. 5V hub to LGND hub on the ohms range, red probe on 5V, black on LGND: must climb past 1 kΩ within about a second; a steady beep or under about 50 Ω is a short.",p:"hub_gnd hub_lgnd hub_5v"},
+    {g:"C: signals"},
+    {k:"C1",c:"C1",t:"Nano A4 to SDA tee slot 1",w:"w-C1",n:"i2c"},
+    {k:"C2",c:"C2",t:"SDA tee slot 2 to OLED SDA (service loop)",w:"w-C2",n:"i2c"},
+    {k:"C3",c:"C3",t:"SDA tee slot 3 to clock SDA",w:"w-C3",n:"i2c"},
+    {k:"C4",c:"C4",t:"Nano A5 to SCL tee slot 1",w:"w-C4",n:"i2c"},
+    {k:"C5",c:"C5",t:"SCL tee slot 2 to OLED SCL (service loop)",w:"w-C5",n:"i2c"},
+    {k:"C6",c:"C6",t:"SCL tee slot 3 to clock SCL",w:"w-C6",n:"i2c"},
+    {k:"C7",c:"C7",t:"Nano D2 to relay IN1",w:"w-C7",n:"rc"},
+    {k:"C8",c:"C8",t:"Nano D3 to relay IN2",w:"w-C8",n:"rc"},
+    {k:"sC",c:"Set",t:"Relay trigger jumpers S1 and S2 both on LOW",p:"relay"},
+    {k:"gC",c:"Prep",t:"Before terminating any switch or actuator lead, pass them through the PG13.5 gland body. Then slide on the dome nut, the bushing and both heat-shrink sleeves.",w:"w-M5 w-M6 w-C9 w-C10 w-NO"},
+    {k:"cS",c:"Check",t:"Beep-test the latch-door switch: the pair that conducts with the roller NOT pressed is COM + NC. With NO capped, either lead of that pair may go to Nano D4 and the other to the top-row GND screw; they are interchangeable in this circuit.",w:"w-C9 w-C10"},
+    {k:"C9",c:"C9",t:"Latch-door switch COM (black on the verified batch) to Nano D4",w:"w-C9",n:"door"},
+    {k:"C10",c:"C10",t:"Latch-door switch NC (grey) to Nano shield top-row GND screw (between RST and D2)",w:"w-C10",n:"gnd"},
+    {k:"cNO",c:"Cap",t:"Latch-door switch NO (blue) capped inside the box right after the gland; never extended",w:"w-NO"},
+    {g:"Keypad"},
+    {k:"kCap",c:"Cap",t:"Keypad PINK, PINK, YELLOW, BLUE, PURPLE, ORANGE (plus GREY and BROWN on 12-lead units), each capped separately at the keypad end",p:"keypad"},
+    {k:"kIso",c:"Check",t:"Keypad isolated: continuity RED to BLACK must NOT be a steady ~0 Ω beep (that is a shorted unit, so do not connect it).",p:"keypad"},
+    {k:"C11",c:"C11",t:"Keypad RED to 12V+ hub slot 4",w:"w-C11",n:"p12"},
+    {k:"C12",c:"C12",t:"Keypad BLACK to GND hub slot 4 (a ground common with the Nano is required)",w:"w-C12",n:"gnd"},
+    {k:"kPow",c:"Check",t:"First power-up, with green and white still loose and the fuse in. Nano 5V to bottom-row GND must read 4.95-5.05 V; 12V+ hub to GND hub 12.8-13.6 V. Green to black and white to black must each read 3.0-5.5 V; above 5.5 V or below 3.0 V, do not connect that keypad. Fuse out.",w:"w-C11 w-C12",p:"nano"},
+    {k:"C13",c:"C13",t:"Keypad GREEN (D0) to 2-slot splice to 10 kΩ to Nano D6",w:"w-C13",n:"kpad"},
+    {k:"C14",c:"C14",t:"Keypad WHITE (D1) to 2-slot splice to 10 kΩ to Nano D7",w:"w-C14",n:"kpad"},
+    {g:"D: relay supply and return"},
+    {k:"M1",c:"M1",t:"12V+ hub slot 3 to relay NO1 (18 AWG red)",w:"w-M1",n:"p12"},
+    {k:"M2",c:"M2",t:"Short 18 AWG red jumper, NO1 to NO2 (it carries motor current)",w:"w-M2",n:"p12"},
+    {k:"M3",c:"M3",t:"GND hub slot 3 to relay NC1 (18 AWG black)",w:"w-M3",n:"gnd"},
+    {k:"M4",c:"M4",t:"Short 18 AWG black jumper, NC1 to NC2",w:"w-M4",n:"gnd"},
+    {k:"cM",c:"Check",t:"Fuse out, continuity. BEEP: NC1 and NC2 to the GND hub, NO1-NO2, NC1-NC2, COM1-NC1, COM2-NC2. OPEN: NO1-NC1, NO1-COM1, NO2-COM2, 12V+ hub-GND hub. Then fuse in, DC volts with the black probe on the GND hub: NO1 and NO2 about 13 V; NC1, NC2, COM1 and COM2 at 0 V; only the relay power LED lit. Fuse out.",w:"w-M1 w-M2 w-M3 w-M4"},
+    {g:"E: A0 strap"},
+    {k:"E1",c:"E1",t:"Nano A0 to shield bottom-row GND screw (22 AWG, about 50 mm; in the same screw as B4). Required.",w:"w-E1",n:"gnd"},
+    {g:"Actuator"},
+    {k:"gS",c:"Seal",t:"Shrink both heat-shrink layers into one jacket where the PG13.5 gland clamps, with the gland's bushing in the middle of the jacket. Tighten the dome and tug-test.",w:"w-M5 w-M6 w-C9 w-C10 w-NO"},
+    {k:"M5",c:"M5",t:"Fuse out (set the unit up first, before M5/M6; setup ends with a lock stroke): actuator RED to relay COM1",w:"w-M5",n:"act"},
+    {k:"M6",c:"M6",t:"Actuator BLACK to relay COM2",w:"w-M6",n:"act"},
+    {k:"tM",c:"Test",t:"With the unit already set up for testing (its setup is not covered on this wiring page), fuse in, hands clear of the rod (the box may run a lock stroke at power-up, when setup completes, or after an unlock). Unlocking must RETRACT the rod. If it extends: fuse out, swap the two actuator leads at the COM screws, and test again. Fix the direction only by swapping the two actuator leads.",w:"w-M5 w-M6"},
+    {g:"Solar charging"},
+    {k:"sol1",c:"Solar 1",t:"Controller fuse OUT. Battery + to the controller's inline fuse holder (the battery goes on the controller first). Check before wiring: how the controller's battery leads land alongside the A1/A3 spades.",w:"w-SOL1",n:"p12",p:"charge_controller fuse_controller"},
+    {k:"sol2",c:"Solar 2",t:"Controller fuse holder to controller BAT+",w:"w-SOL2",n:"p12"},
+    {k:"sol3",c:"Solar 3",t:"Battery − to controller BAT−. Check before wiring: how the controller's battery leads land alongside the A1/A3 spades.",w:"w-SOL3",n:"gnd"},
+    {k:"solF",c:"Fuse",t:"Check the rating of the controller fuse for this lead, then fit it (both BAT leads landed).",p:"fuse_controller charge_controller"},
+    {k:"sS",c:"Set",t:"Set the controller's battery type to LITHIUM (LI), 12 V, before the panel is connected. It then asks for a charge voltage: check before saving (the value is not settled on this page). Hold ENTER about 3 s to save, then open the setting again and check that it shows LI.",p:"charge_controller"},
+    {k:"sol4",c:"Solar 4",t:"Panel lead in through the M12 gland; tighten the gland nut for the seal. Then panel + (tape-marked lead) to controller PV+",w:"w-SOL4",n:"pv"},
+    {k:"sol5",c:"Solar 5",t:"Panel − (through the same M12 gland) to controller PV−",w:"w-SOL5",n:"pv"},
+    {k:"sL",c:"Check",t:"Controller LOAD terminals left empty",p:"charge_controller"},
+    {k:"cSol",c:"Check",t:"In sunlight, on a battery that is not full, the controller's charge indicator should light and the battery voltage should creep up on the meter. If it does not, check that the controller fuse is in and that PV+ and PV− are the right way round, then re-check the battery-type setting.",p:"charge_controller solar_panel"},
+    {g:"Finish"},
+    {k:"fin",c:"Finish",t:"Tug-test every lever-connector wire. After closing the control-box lid, tug-test the four screen wires.",w:"w-B7 w-B8 w-C2 w-C5",p:"hub_12v hub_gnd hub_5v hub_lgnd i2c_tees splices"},
+    {k:"fin2",c:"Finish",t:"Route the 18 AWG 12 V runs and the A0 strap away from the shield's signal screws, and zip-tie each loom to an adhesive mount.",w:"w-E1"}
+  ];
+
+  var LS="oneLatchWiringChecks", store={};
+  try{ store=JSON.parse(localStorage.getItem(LS)||"{}")||{}; }catch(e){ store={}; }
+  function save(){ try{ localStorage.setItem(LS,JSON.stringify(store)); }catch(e){} }
+
+  var body=document.body, svg=document.querySelector('#board svg'), board=document.getElementById('board');
+  var wires=[].slice.call(svg.querySelectorAll('.wire'));
+  var comps=[].slice.call(svg.querySelectorAll('.comp'));
+  var legend=[].slice.call(document.querySelectorAll('.lg[data-net]'));
+  var pTitle=document.getElementById('pTitle'), ccard=document.getElementById('ccard'), clist=document.getElementById('clist');
+  var subBox=document.getElementById('subLegend'), panel=document.querySelector('.panel');
+  var locked={t:'none'}, rows=[], boxes=[], rowOfWire={};
+  /* Single nets inside a colour group (same colour, separate circuits). */
+  var SUB={p12:[["batraw","Battery + (before the fuses)"],["fused12","Fused 12 V (12V+ hub)"],["ctlbat","Controller BAT+ (after its fuse)"]],
+    i2c:[["sda","SDA (Nano A4)"],["scl","SCL (Nano A5)"]],
+    rc:[["in1","IN1 (Nano D2)"],["in2","IN2 (Nano D3)"]],
+    kpad:[["wg0","Green, Wiegand D0 (Nano D6)"],["wg1","White, Wiegand D1 (Nano D7)"]],
+    act:[["acta","Red lead (COM1)"],["actb","Black lead (COM2)"]]};
+  var NOTICK={Check:1,Prep:1,Test:1,Seal:1,Set:1,Finish:1,Fuse:1};
+
+  /* build the checklist */
+  CK.forEach(function(it){
+    if(it.g){ var h=document.createElement('div'); h.className='grp'; h.textContent=it.g; clist.appendChild(h); return; }
+    var lab=document.createElement('label'); lab.className='ck-row'; lab.setAttribute('data-wire',it.w||''); lab.setAttribute('data-part',it.p||'');
+    var inp=document.createElement('input'); inp.type='checkbox'; inp.setAttribute('data-k',it.k);
+    var bx=document.createElement('span'); bx.className='box';
+    var d2=document.createElement('span'); d2.className='dot2'; d2.style.background=it.n?'var(--'+it.n+')':'var(--line)';
+    var tx=document.createElement('span'); tx.className='txt';
+    var b=document.createElement('b'); b.textContent=it.c; tx.appendChild(b); tx.appendChild(document.createTextNode(' — '+it.t));
+    lab.appendChild(inp); lab.appendChild(bx); lab.appendChild(d2); lab.appendChild(tx); clist.appendChild(lab);
+    rows.push(lab); boxes.push(inp);
+    (it.w||'').split(' ').forEach(function(id){ if(id && !rowOfWire[id] && !NOTICK[it.c]) rowOfWire[id]=inp; });
+    if(store[it.k]){ inp.checked=true; lab.classList.add('done'); }
+    inp.addEventListener('change',function(){ store[it.k]=inp.checked; lab.classList.toggle('done',inp.checked); save(); progress(); refreshCardTicks(); });
+  });
+  var runCount=svg.querySelectorAll('.wire:not(.lead)').length;
+  function progress(){ var n=boxes.filter(function(b){return b.checked;}).length, t=boxes.length;
+    document.getElementById('pfill').style.width=Math.round(n/t*100)+'%';
+    document.getElementById('pnum').textContent=n+' / '+t+' steps done · '+runCount+' wire runs in the drawing'; }
+
+  /* highlighting */
+  function compEl(id){ for(var i=0;i<comps.length;i++){ if(comps[i].getAttribute('data-comp')===id) return comps[i]; } return null; }
+  function focusComps(w){ (w.getAttribute('data-comp')||'').split(' ').forEach(function(c){ var g=compEl(c); if(g) g.classList.add('focus'); }); }
+  function subChips(){ return [].slice.call(subBox.querySelectorAll('.lg.sub')); }
+  function clear(){ body.classList.remove('sel'); wires.forEach(function(w){w.classList.remove('hot');});
+    comps.forEach(function(c){c.classList.remove('focus');}); legend.concat(subChips()).forEach(function(l){l.classList.remove('on');}); }
+  function syncPressed(){
+    legend.forEach(function(l){ var n=l.getAttribute('data-net');
+      l.setAttribute('aria-pressed',String((locked.t==='net'&&locked.v===n)||(locked.t==='sub'&&locked.g===n))); });
+    subChips().forEach(function(c){ c.setAttribute('aria-pressed',String(locked.t==='sub'&&locked.v===c.getAttribute('data-sub'))); });
+    comps.forEach(function(g){ g.setAttribute('aria-pressed',String(locked.t==='comp'&&locked.v===g.getAttribute('data-comp'))); }); }
   function apply(sel){
-    clear();
-    if(sel.t==='none') return;
-    body.classList.add('sel');
-    if(sel.t==='net'){ wires.forEach(w=>{ if(w.classList.contains('net-'+sel.v)) w.classList.add('hot'); });
-      legend.find(l=>l.dataset.net===sel.v)?.classList.add('on'); }
-    else if(sel.t==='comp'){ comps.find(c=>c.dataset.comp===sel.v)?.classList.add('focus');
-      wires.forEach(w=>{ const s=w.dataset.comp.split(' ');
-        if(s.includes(sel.v)){ w.classList.add('hot'); s.forEach(c=>comps.find(x=>x.dataset.comp===c)?.classList.add('focus')); }}); }
-    else if(sel.t==='wire'){ const w=document.getElementById(sel.v);
-      if(w){ w.classList.add('hot'); w.dataset.comp.split(' ').forEach(c=>comps.find(x=>x.dataset.comp===c)?.classList.add('focus')); } }
+    clear(); syncPressed(); if(sel.t==='none') return; body.classList.add('sel');
+    if(sel.t==='net'){ wires.forEach(function(w){ if(w.classList.contains('net-'+sel.v)) w.classList.add('hot'); });
+      legend.forEach(function(l){ if(l.getAttribute('data-net')===sel.v) l.classList.add('on'); }); }
+    else if(sel.t==='sub'){ wires.forEach(function(w){ if(w.classList.contains('n-'+sel.v)) w.classList.add('hot'); });
+      legend.forEach(function(l){ if(l.getAttribute('data-net')===sel.g) l.classList.add('on'); });
+      subChips().forEach(function(c){ if(c.getAttribute('data-sub')===sel.v) c.classList.add('on'); }); }
+    else if(sel.t==='comp'){ var g=compEl(sel.v); if(g) g.classList.add('focus');
+      wires.forEach(function(w){ var s=(w.getAttribute('data-comp')||'').split(' '); if(s.indexOf(sel.v)>-1){ w.classList.add('hot'); focusComps(w); } }); }
+    else if(sel.t==='wires'){ sel.v.forEach(function(id){ var w=document.getElementById(id); if(w){ w.classList.add('hot'); focusComps(w); } }); }
   }
-  const preview=s=>apply(s), unpreview=()=>apply(locked);
+  function preview(s){ apply(s); } function unpreview(){ apply(locked); }
 
-  legend.forEach(l=>{
-    l.addEventListener('mouseenter',()=>preview({t:'net',v:l.dataset.net}));
+  function netColor(id){ var w=document.getElementById(id); if(!w) return 'var(--line)';
+    var nets=['p12','p5','gnd','i2c','kpad','rc','door','act','pv'];
+    for(var i=0;i<nets.length;i++){ if(w.classList.contains('net-'+nets[i])) return 'var(--'+nets[i]+')'; } return 'var(--muted)'; }
+
+  function renderCard(id){
+    var info=INFO[id]; if(!info){ closeCard(); return; }
+    var h='<div class="model">'+info.m+'</div><div class="cdesc">'+info.d+'</div>';
+    if(info.x) h+='<div class="warn">'+info.x+'</div>';
+    if(info.w.length){ h+='<div class="sect">Connections · hover to trace · tap to tick its build step</div>';
+      info.w.forEach(function(r){ h+='<div class="cw'+(r[0]?' link" tabindex="0" role="button':'')+'" data-cw="'+r[0]+'"><span class="dot2" style="background:'+(r[0]?netColor(r[0]):'var(--line)')+'"></span><span class="t">'+r[1]+'</span></div>'; }); }
+    else h+='<div class="sect">No wires · no build steps (full checklist below)</div>';
+    h+='<button type="button" class="close" id="cardClose">close card</button>';
+    ccard.innerHTML=h; ccard.hidden=false; pTitle.innerHTML=info.t;
+    [].slice.call(ccard.querySelectorAll('.cw.link')).forEach(function(el){ var wid=el.getAttribute('data-cw');
+      el.addEventListener('mouseenter',function(){ preview({t:'wires',v:[wid]}); });
+      el.addEventListener('mouseleave',unpreview);
+      el.addEventListener('focus',function(){ preview({t:'wires',v:[wid]}); });
+      el.addEventListener('blur',unpreview);
+      activate(el,function(){ var b=rowOfWire[wid]; if(b&&!b.checked){ b.checked=true; b.dispatchEvent(new Event('change')); } }); });
+    refreshCardTicks();
+    document.getElementById('cardClose').addEventListener('click',function(){ locked={t:'none'}; apply(locked); closeCard(); });
+    /* Filter the checklist to this part: rows that trace one of its wires, or that name it in data-part. */
+    var set={}; info.w.forEach(function(r){ if(r[0]) set[r[0]]=1; });
+    function rowHit(r){ var hit=false;
+      (r.getAttribute('data-wire')||'').split(' ').forEach(function(x){ if(set[x]) hit=true; });
+      if((' '+(r.getAttribute('data-part')||'')+' ').indexOf(' '+id+' ')>-1) hit=true;
+      return hit; }
+    var shown=rows.filter(rowHit).length;
+    if(!shown){ restoreList(); return; }
+    rows.forEach(function(r){ r.style.display=rowHit(r)?'':'none'; });
+    groupVisibility();
+  }
+  /* A card row shows its build step as done once that step is ticked; untick in the list. */
+  function refreshCardTicks(){ if(ccard.hidden) return;
+    [].slice.call(ccard.querySelectorAll('.cw.link')).forEach(function(el){ var b=rowOfWire[el.getAttribute('data-cw')];
+      el.classList.toggle('done',!!(b&&b.checked)); }); }
+  function restoreList(){ rows.forEach(function(r){ r.style.display=''; }); groupVisibility(); }
+  function groupVisibility(){ var kids=[].slice.call(clist.children);
+    kids.forEach(function(el,i){ if(!el.classList.contains('grp')) return; var any=false;
+      for(var j=i+1;j<kids.length && !kids[j].classList.contains('grp');j++){ if(kids[j].style.display!=='none'){ any=true; break; } }
+      el.style.display=any?'':'none'; }); }
+  function closeCard(){ ccard.hidden=true; ccard.innerHTML=''; pTitle.textContent='All connections'; restoreList(); }
+
+  function activate(el,fn){ el.addEventListener('click',fn);
+    el.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); fn(); } }); }
+
+  function netLabel(net){ for(var i=0;i<legend.length;i++){ if(legend[i].getAttribute('data-net')===net) return legend[i].textContent.trim(); } return ''; }
+  /* When a colour group with several circuits is locked, offer its single nets. */
+  function renderSub(net){ subBox.innerHTML=''; var list=net?SUB[net]:null;
+    if(!list){ subBox.hidden=true; return; }
+    var hint=document.createElement('span'); hint.className='subhint'; hint.textContent='One circuit at a time:'; subBox.appendChild(hint);
+    list.forEach(function(s){ var c=document.createElement('div'); c.className='lg sub'; c.tabIndex=0;
+      c.setAttribute('role','button'); c.setAttribute('data-sub',s[0]); c.setAttribute('aria-pressed','false');
+      var sw=document.createElement('span'); sw.className='sw'; sw.style.background='var(--'+net+')'; c.appendChild(sw);
+      c.appendChild(document.createTextNode(s[1]));
+      c.addEventListener('mouseenter',function(){ preview({t:'sub',v:s[0],g:net}); });
+      c.addEventListener('mouseleave',unpreview);
+      activate(c,function(){ locked=(locked.t==='sub'&&locked.v===s[0])?{t:'net',v:net}:{t:'sub',v:s[0],g:net}; apply(locked);
+        pTitle.textContent=(locked.t==='sub')?s[1]:netLabel(net); });
+      subBox.appendChild(c); });
+    subBox.hidden=false; }
+
+  legend.forEach(function(l){ var net=l.getAttribute('data-net');
+    l.addEventListener('mouseenter',function(){ preview({t:'net',v:net}); });
     l.addEventListener('mouseleave',unpreview);
-    l.addEventListener('click',()=>{ locked=(locked.t==='net'&&locked.v===l.dataset.net)?{t:'none'}:{t:'net',v:l.dataset.net}; apply(locked); pTitle.textContent=locked.t==='none'?'All connections':l.textContent.trim(); });
-  });
-  comps.forEach(g=>{ const hit=g.querySelector('.hit'), id=g.dataset.comp;
-    hit.addEventListener('mouseenter',()=>preview({t:'comp',v:id}));
-    hit.addEventListener('mouseleave',unpreview);
-    hit.addEventListener('click',()=>{ locked=(locked.t==='comp'&&locked.v===id)?{t:'none'}:{t:'comp',v:id}; apply(locked); pTitle.textContent=locked.t==='none'?'All connections':id.toUpperCase(); });
-  });
-  rows.forEach(r=>{ const id=r.dataset.wire;
-    r.addEventListener('mouseenter',()=>preview({t:'wire',v:id}));
+    activate(l,function(){ locked=(locked.t==='net'&&locked.v===net)?{t:'none'}:{t:'net',v:net}; closeCard(); renderSub(locked.t==='none'?null:net); apply(locked);
+      if(locked.t!=='none') pTitle.textContent=l.textContent.trim(); }); });
+  comps.forEach(function(g){ var id=g.getAttribute('data-comp');
+    g.setAttribute('tabindex','0'); g.setAttribute('role','button');
+    var tt=document.createElementNS('http://www.w3.org/2000/svg','title'); var tmp=document.createElement('div'); tmp.innerHTML=(INFO[id]||{t:id}).t; tt.textContent=tmp.textContent; g.insertBefore(tt,g.firstChild);
+    g.setAttribute('aria-label',tmp.textContent);
+    [].slice.call(g.querySelectorAll('.hit')).forEach(function(hit){
+      hit.addEventListener('mouseenter',function(){ preview({t:'comp',v:id}); });
+      hit.addEventListener('mouseleave',unpreview); });
+    g.addEventListener('focus',function(){ preview({t:'comp',v:id}); });
+    g.addEventListener('blur',unpreview);
+    activate(g,function(){ renderSub(null);
+      if(locked.t==='comp'&&locked.v===id){ locked={t:'none'}; apply(locked); closeCard(); }
+      else{ locked={t:'comp',v:id}; apply(locked); renderCard(id);
+        if(window.innerWidth<=900 && panel && panel.scrollIntoView){ try{ panel.scrollIntoView({behavior:'smooth',block:'start'}); }catch(e){} } } }); });
+  rows.forEach(function(r){ var ids=(r.getAttribute('data-wire')||'').split(' ').filter(Boolean); if(!ids.length) return;
+    r.addEventListener('mouseenter',function(){ preview({t:'wires',v:ids}); });
     r.addEventListener('mouseleave',unpreview); });
-
-  boxes.forEach(b=>{ if(store[b.dataset.w]) b.checked=true;
-    b.addEventListener('change',()=>{ store[b.dataset.w]=b.checked; localStorage.setItem(LS,JSON.stringify(store)); progress(); }); });
-  function progress(){ const n=boxes.filter(b=>b.checked).length,t=boxes.length,pct=Math.round(n/t*100);
-    document.getElementById('pfill').style.width=pct+'%'; document.getElementById('pnum').textContent=n+' / '+t+' wired'; }
-  document.getElementById('resetBtn').addEventListener('click',()=>{ locked={t:'none'}; apply(locked); pTitle.textContent='All connections'; });
+  activate(document.getElementById('resetBtn'),function(){ locked={t:'none'}; renderSub(null); apply(locked); closeCard(); });
+  var zoomBtn=document.getElementById('zoomBtn');
+  activate(zoomBtn,function(){ var on=board.classList.toggle('zoomed'); zoomBtn.setAttribute('aria-pressed',String(on));
+    zoomBtn.classList.toggle('on',on); zoomBtn.querySelector('.reset').textContent=on?'⊖ fit drawing':'⊕ zoom drawing'; });
+  syncPressed();
   progress();
 })();
 </script>

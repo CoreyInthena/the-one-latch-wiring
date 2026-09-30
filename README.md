@@ -1,8 +1,10 @@
 # The One Latch — Wiring Diagram (shareable)
 
 An interactive wiring diagram for The One Latch smart feed-bin lock electronics
-(Arduino Nano, LM2596 buck, 2-channel relay, WAGO junctions, 12V actuator, OLED,
-keypad, IP67 micro switch).
+(Arduino Nano on a screw-terminal shield, LM2596 buck, 2-channel relay, lever-nut
+hubs, 12 V actuator, 12 V LiFePO4 battery, solar panel and charge controller,
+Wiegand keypad, OLED screen, real-time clock, and a roller microswitch (sold as
+IP67) that reads the latch's own door).
 
 **Live page:** served via GitHub Pages (see the repo's Pages URL).
 
